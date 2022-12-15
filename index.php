@@ -35,6 +35,7 @@
     <?php
         require_once("ephemeride.php");
         $base_path = realpath('.');
+        if (!is_dir("$base_path/db")) { mkdir("$base_path/db",0770); }
         if (isset($_POST['name']) and isset($_POST['passwd'])) {
             $name = $_POST['name'];
             $passwd = $_POST['passwd'];
