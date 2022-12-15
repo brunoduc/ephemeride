@@ -1,0 +1,269 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+main {
+    flex-grow: 3;
+    padding:10px;
+}
+footer {
+    padding: 1em;
+    display: flex;
+    border-top: black solid 1px;
+    justify-content: space-around;
+}
+
+#nav { display: flex; flex-direction: row; justify-content: center; }
+#nav li { display: flex; flex-wrap: wrap; justify-content: start; padding:0px; color: black; text-shadow: 1px 1px 5px #666; margin:0 1em 0 1em; cursor:pointer; }
+#nav > li > pre { display:none; margin-top:0px;margin-bottom:0px;padding-top:10px;padding-bottom:0px;padding-left:10px;}
+
+h1,h2 { text-align: center; text-shadow: 2px 2px 5px #9D78AD; }
+h1 {margin-top:10px;}
+
+ul {margin:0px; padding:0px;}
+.svg_nav { max-height:2em;}
+
+.mono-col {
+    margin: 1em auto;
+    width: 400px;
+    max-width: 100%;
+}
+.mono-col > li {
+    margin: .5em 0 .5em 0;
+}
+.mono-col > li > input {
+}
+
+fieldset.res {
+    max-width: 800px;
+    margin: 2em auto 0px auto;
+    border-radius: 25px;
+    box-shadow: 5px 5px 30px 10px rgba(0,0,0,0.75);
+} 
+
+form.form > ol {
+    padding:0;
+    margin:0;
+    list-style-type:none;
+}
+
+form input {
+    padding: 12px 16px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    width:100%;
+}
+
+form input[type = submit] {
+    margin: 10px auto;
+    padding:12px 30px 12px 30px;
+    display: block;
+    width: auto;
+    background-color:#90f080;
+    border-radius: 25px;
+    cursor:pointer;
+}
+
+legend.legend {
+    border-color: #a3aba3;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color:#d5dbec;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 4px 20px 0px 20px;
+}
+
+ol li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0.1em;
+    line-height: 2em;
+}
+
+ol , ul {
+    list-style: none;
+    padding:0px;
+}
+
+.date {
+    font-weight: bold;
+    padding: 10px 0px 0px 10px;
+    display: inline-block;
+}
+
+
+
+form label {
+    padding: 6px 26px 0px;
+    margin: 0px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    width:100%;
+}
+
+form select {
+    padding: 12px 16px;
+    margin: 6px 0;
+    border: none;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+    width:100%;
+}
+
+form textarea {
+    width:100%;
+}
+
+.img_ta {
+    max-height: 1.6em;
+    float: right;
+    padding: 0px;
+    box-sizing: border-box;
+    color:black;
+    width:2em;
+}
+.span_ta {
+    float: right;
+    padding:8px 8px 0 8px;
+    font-size: small;
+    font-stretch: condensed;
+    font-weight: bold;
+}
+.img_ta:hover,
+.span_ta:hover { cursor:pointer; }
+.green { fill:green; }
+.red { fill:red; } 
+.l_icon { height : 2em; }
+.logs {
+    padding-left: .8em;
+    margin-top: .5em;
+    /*flex-grow: 3;*/
+}
+#lien {
+    display: block;
+    text-align: center;
+    padding: 14.5px;
+}
+#lien:hover {
+    color:blue;
+    cursor:pointer;
+}
+#cde { display:none; }
+.message {
+    display: flex;
+    justify-content: center;
+}
+
+
+
+/*input[type=range]::-moz-range-progress {
+  background-color: green;
+  height: 1em;
+  border-radius: .5em;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	height: 35px; /* pick your own value
+	padding: 0;	
+	/* your slider styles 
+}*/
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	box-sizing: content-box;
+	/* your thumb styles */
+}
+
+input[type=range]::-moz-range-thumb {
+	/* again your thumb styles */
+}
+
+input[type=range]::-ms-thumb { /* should come after -webkit- */
+	/* again your thumb styles */
+	/* may require different margins */
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+	/* your track styles */
+}
+
+
+input[type=range]::-ms-track { /* should come after -webkit- */
+	border-color: transparent;
+	color: transparent;
+	/* again your track styles */
+}
+input[type=range].s {
+    cursor: w-resize;
+}
+input[type=range].e {
+    cursor: e-resize;
+}
+input[type=range].s::-moz-range-track {
+  background-color: green;
+}
+input[type="range"].s::-moz-range-progress {
+  background-color: #43e5f7;
+}
+input[type=range].e::-moz-range-track {
+  background-color: #43e5f7;
+}
+input[type="range"].e::-moz-range-progress {
+  background-color: green;
+}
+
+
+
+
+
+
+
+
+
+
+
+@media (min-width:800px) {
+#nav > li > pre {display:inline-block;}
+    
+form.form > ol > li {
+    display: flex;
+    justify-content: unset;
+    margin:.1em;
+    flex-grow: 0.04;
+}
+form label {
+}
+
+input.form-control { width:400px;}
+
+form.form input.w20, form.form output.w20 {
+    width: 24%;
+    height: 1.5em;
+    text-align:center;
+}
+.message { 
+    width: 500px;
+    margin: 50px auto; 
+} 
+.img_ta {
+    margin:8px;
+}
+#nav li {
+    flex-grow: 0.04;
+}
+.mono-col > li {
+    font-size:120%;
+}
+.mono-col > li > input {
+    font-size:120%;
+}
+    
+}
+
