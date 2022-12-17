@@ -129,6 +129,9 @@ EOF;
                 
                 // Affichage des anniversaires
                 $eph->liste_birthday();
+                
+                // Affichage des prochains événements
+                $eph->liste_next_ev();
             }
             $eph->print_log();
         ?>

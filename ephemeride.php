@@ -96,17 +96,20 @@ public function liste_birthday() {
 
 public function liste_next_ev() {
     try {
-        $sql_query = 'SELECT date, DATE_FORMAT(date,"%a %e %M %Y") AS datefr, name FROM items WHERE category_id!=1 
-        AND (date >= date(now()) AND date <= DATE_ADD(now(), INTERVAL 30 DAY)) ORDER BY date';
-        $res=$this->connection->query($sql_query);
-        if (!$res->num_rows) { echo "<p>Pas d'événement prochainement</p>"; }
-        echo "<ul>";
-        while ($row = $res->fetch_assoc()) {
-            echo "<li>$row[datefr] : $row[name]</li>";
+        $sql_query = "SELECT date, name FROM items WHERE category_id!=1 
+        AND (date >= date('now') AND date <= DATE('now', '+1 month')) ORDER BY date";
+        $this->print_debug ($sql_query);
+        $res=$this->query($sql_query);
+        if ($res) {
+            echo "<fieldset class=res><ul>";
+            while ($row = $res->fetchArray()) {
+                echo "<li><span class=date>$row[date_f]</span> - Catégorie : $row[cname]";
+                echo "<br>$row[name]\n";
+            }
+            echo "</ul></fieldset>";
         }
-        echo "</ul>";
     }
-    catch(mysqli_sql_exception $e) {
+    catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
     }
 }
