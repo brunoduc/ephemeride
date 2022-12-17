@@ -69,7 +69,42 @@ public function init_table() {
         }
         $this->new_log("Création du compte réussie", 0);
     }
-    
+
+public function liste_birthday() {
+    try {
+        $sql_query = 'SELECT date, DATE_FORMAT(date,"%a %e %M %Y") AS date, name FROM items WHERE (category_id=1) 
+        AND ((day(date) >= day(CURDATE()) AND month(date) = month(CURDATE()))
+        OR (day(date) < day(CURDATE()) AND month(date) = month(CURDATE())+1 MOD 12)) ORDER BY month(date), day(date) ASC';
+        $res=$this->connection->query($sql_query);
+        if (!$res->num_rows) { echo "<p>Pas d'anniversaire prochainement</p>"; }
+        echo "<ul>";
+        while ($row = $res->fetch_assoc()) {
+            echo "<li>$row[date] : $row[name]</li>";
+        }
+        echo "</ul>";
+    }
+    catch(mysqli_sql_exception $e) {
+        $this->new_log($e->getMessage(), 1) ;
+    }
+}
+
+public function liste_next_ev() {
+    try {
+        $sql_query = 'SELECT date, DATE_FORMAT(date,"%a %e %M %Y") AS datefr, name FROM items WHERE category_id!=1 
+        AND (date >= date(now()) AND date <= DATE_ADD(now(), INTERVAL 30 DAY)) ORDER BY date';
+        $res=$this->connection->query($sql_query);
+        if (!$res->num_rows) { echo "<p>Pas d'événement prochainement</p>"; }
+        echo "<ul>";
+        while ($row = $res->fetch_assoc()) {
+            echo "<li>$row[datefr] : $row[name]</li>";
+        }
+        echo "</ul>";
+    }
+    catch(mysqli_sql_exception $e) {
+        $this->new_log($e->getMessage(), 1);
+    }
+}
+
 public function liste_cat($type) {
     echo "IN fonction";
         if ($type) { $sql_query = "SELECT * FROM category WHERE parent = $type ORDER BY name ASC "; }
