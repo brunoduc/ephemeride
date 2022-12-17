@@ -27,6 +27,7 @@ private function print_debug(string $message) {
 }
 
 public function init_table() {
+    $res = TRUE;
     $commands = ['
     CREATE TABLE IF NOT EXISTS tags (
         tag_id   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,9 +66,10 @@ public function init_table() {
         foreach ($commands as $command) {
             if (!$this->exec($command)) {
                 echo $command." => Erreur dans l'exécution :<br>".$this->lastErrorMsg()."<br>";
+                $res=FALSE;
             }
         }
-        $this->new_log("Création du compte réussie", 0);
+        return $res;
     }
 
 public function liste_birthday() {

@@ -44,14 +44,16 @@
             if (file_exists($filename)) {
                 $_SESSION['connected'] = TRUE;
                 $_SESSION['base'] = $filename;
+                $eph = new ephemeride($filename);
             }
             else {
                 if ((count(scandir($base_path.'/db')) < 3) or ((isset($_POST['cde']) and $_POST['cde']=="0000"))) {
                     $eph = new ephemeride($filename);
-                    $eph->init_table();
-                    $_SESSION['connected'] = TRUE;
-                    $_SESSION['base'] = $filename;
-                    $baselog = "<div class=message><span class=green><svg viewBox='0 0 15 15' class='l_icon'><use xlink:href='#good'/></svg></span><span class=logs>Base crée</span></div>";
+                    if ($eph->init_table()) {
+                        $_SESSION['connected'] = TRUE;
+                        $_SESSION['base'] = $filename;
+                        $eph->new_log("Utilistateur enregistré", 0);
+                    }
                 }
             }
         }
@@ -63,7 +65,6 @@
             $_SESSION = array();
         }
         if (isset($_SESSION['connected'])) {
-        $eph = new ephemeride($_SESSION['base']);
         echo <<<EOF
         <nav>
             <form id="nav_form" method="post">
@@ -124,9 +125,8 @@ EOF;
                 if (!empty($_POST['find_tag']) and ($_POST['find_tag'] != "")) {
                     $eph->find_by_tag(intval($_POST['find_tag']),$_POST['debut_r'],$_POST['fin_r']);
                 }
-            $eph->print_log();
             }
-            if (isset($baselog)) { echo $baselog; }
+            $eph->print_log();
         ?>
     
     </main>
