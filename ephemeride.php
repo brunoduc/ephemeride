@@ -74,19 +74,23 @@ public function init_table() {
 
 public function liste_birthday() {
     try {
-        $sql_query = 'SELECT date, DATE_FORMAT(date,"%a %e %M %Y") AS date, name FROM items WHERE (category_id=1) 
-        AND ((day(date) >= day(CURDATE()) AND month(date) = month(CURDATE()))
-        OR (day(date) < day(CURDATE()) AND month(date) = month(CURDATE())+1 MOD 12)) ORDER BY month(date), day(date) ASC';
-        $res=$this->connection->query($sql_query);
-        if (!$res->num_rows) { echo "<p>Pas d'anniversaire prochainement</p>"; }
-        echo "<ul>";
-        while ($row = $res->fetch_assoc()) {
-            echo "<li>$row[date] : $row[name]</li>";
+        $sql_query = "SELECT date, name FROM items WHERE (category_id=1) AND (strftime('%d', `date`) >= strftime('%d', 'now')) AND (strftime('%m', `date`) = strftime('%m', 'now')) OR (
+        (strftime('%d', `date`) < strftime('%d', 'now')) AND 
+        (strftime('%m', `date`)=strftime('%m', 'now','+1 month'))
+        )";
+        $this->print_debug ($sql_query);
+        $res=$this->query($sql_query);
+        if ($res) {
+            echo "<fieldset class=res><ul>";
+            while ($row = $res->fetchArray()) {
+                echo "<li><span class=date>$row[date_f]</span> - Catégorie : $row[cname]";
+                echo "<br>$row[name]\n";
+            }
+            echo "</ul></fieldset>";
         }
-        echo "</ul>";
     }
-    catch(mysqli_sql_exception $e) {
-        $this->new_log($e->getMessage(), 1) ;
+    catch(Exception $e) {
+        $this->new_log($e->getMessage(), 1);
     }
 }
 

@@ -65,6 +65,7 @@
             $_SESSION = array();
         }
         if (isset($_SESSION['connected'])) {
+        $eph = new ephemeride($_SESSION['base']);
         echo <<<EOF
         <nav>
             <form id="nav_form" method="post">
@@ -125,6 +126,9 @@ EOF;
                 if (!empty($_POST['find_tag']) and ($_POST['find_tag'] != "")) {
                     $eph->find_by_tag(intval($_POST['find_tag']),$_POST['debut_r'],$_POST['fin_r']);
                 }
+                
+                // Affichage des anniversaires
+                $eph->liste_birthday();
             }
             $eph->print_log();
         ?>
