@@ -123,15 +123,18 @@ EOF;
                 }
 
                 // Recherche d'évenement par tags
-                if (!empty($_POST['find_tag']) and ($_POST['find_tag'] != "")) {
+                elseif (!empty($_POST['find_tag']) and ($_POST['find_tag'] != "")) {
                     $eph->find_by_tag(intval($_POST['find_tag']),$_POST['debut_r'],$_POST['fin_r']);
                 }
                 
-                // Affichage des anniversaires
-                $eph->liste_birthday();
-                
-                // Affichage des prochains événements
-                $eph->liste_next_ev();
+                // Rien de demandé alors 
+                else {
+                    // Affichage des anniversaires
+                    $eph->liste_birthday();
+                    
+                    // Affichage des prochains événements
+                    $eph->liste_next_ev();
+                }
             }
             $eph->print_log();
         ?>

@@ -74,7 +74,10 @@ public function init_table() {
 
 public function liste_birthday() {
     try {
-        $sql_query = "SELECT item_id, date, name FROM items WHERE (category_id=1) AND (strftime('%d', `date`) >= strftime('%d', 'now')) AND (strftime('%m', `date`) = strftime('%m', 'now')) OR (
+        $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date, name FROM items WHERE 
+        (category_id=1) AND 
+        (strftime('%d', `date`) >= strftime('%d', 'now')) AND
+        (strftime('%m', `date`) = strftime('%m', 'now')) OR (
         (strftime('%d', `date`) < strftime('%d', 'now')) AND 
         (strftime('%m', `date`)=strftime('%m', 'now','+1 month'))
         )";
@@ -87,7 +90,7 @@ public function liste_birthday() {
             $res->reset();
             echo "<fieldset class=res><ul>";
             while ($row = $res->fetchArray()) {
-                echo "<li><span class=date>$row[date_f]</span> - Catégorie : $row[cname]";
+                echo "<li><span class=date>$row[date]</span>";
                 echo "<br>$row[name]\n";
             }
             echo "</ul></fieldset>";
@@ -103,8 +106,10 @@ public function liste_birthday() {
 
 public function liste_next_ev() {
     try {
-        $sql_query = "SELECT item_id, date, name FROM items WHERE category_id!=1 
-        AND (date >= date('now') AND date <= DATE('now', '+1 month')) ORDER BY date";
+        $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date, items.name as name, category.name as cname FROM items, category WHERE
+        items.category_id!=1 AND
+        items.category_id = category.category_id AND 
+        (date >= date('now') AND date <= DATE('now', '+1 month')) ORDER BY date";
         $this->print_debug ($sql_query);
         $res=$this->query($sql_query);
         
@@ -114,7 +119,7 @@ public function liste_next_ev() {
             $res->reset();
             echo "<fieldset class=res><ul>";
             while ($row = $res->fetchArray()) {
-                echo "<li><span class=date>$row[date_f]</span> - Catégorie : $row[cname]";
+                echo "<li><span class=date>$row[date]</span> - Catégorie : $row[cname]";
                 echo "<br>$row[name]\n";
             }
             echo "</ul></fieldset>";
