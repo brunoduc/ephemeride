@@ -88,6 +88,7 @@ public function liste_birthday() {
         
         if ($test[item_id]) {
             $res->reset();
+            echo "<h3>Prochains anniversaires</h3>";
             echo "<fieldset class=res><ul>";
             while ($row = $res->fetchArray()) {
                 echo "<li><span class=date>$row[date]</span>";
@@ -117,6 +118,7 @@ public function liste_next_ev() {
         
         if ($test[item_id]) {
             $res->reset();
+            echo "<h3>Prochains événements</h3>";
             echo "<fieldset class=res><ul>";
             while ($row = $res->fetchArray()) {
                 echo "<li><span class=date>$row[date]</span> - Catégorie : $row[cname]";
