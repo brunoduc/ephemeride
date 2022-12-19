@@ -7,7 +7,7 @@ public $password;
 public $db;
 
 private $log="";
-private $debug=TRUE;
+private $debug=FALSE;
 
 function __construct(string $db) {
     $_SESSION['log']="";
