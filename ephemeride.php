@@ -7,7 +7,7 @@ public $password;
 public $db;
 
 private $log="";
-private $debug=FALSE;
+private $debug=TRUE;
 
 function __construct(string $db) {
     $_SESSION['log']="";
@@ -75,12 +75,12 @@ public function init_table() {
 public function liste_birthday() {
     try {
         $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date, name FROM items WHERE 
-        (category_id=1) AND 
+        (category_id=1) AND (
         (strftime('%d', `date`) >= strftime('%d', 'now')) AND
         (strftime('%m', `date`) = strftime('%m', 'now')) OR (
         (strftime('%d', `date`) < strftime('%d', 'now')) AND 
         (strftime('%m', `date`)=strftime('%m', 'now','+1 month'))
-        )";
+        ))";
         $this->print_debug ($sql_query);
         $res=$this->query($sql_query);
         
