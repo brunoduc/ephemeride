@@ -15,7 +15,8 @@ echo <<<EOF
         <select name=sub_cat id=sub_cat>
             <option value="NULL">* Catégorie parente *</option>
 EOF;
-$eph->list_all_cat();
+// $eph->list_all_cat();
+$eph->liste_cat(0);
 echo <<<EOF
          </select>
         </li>

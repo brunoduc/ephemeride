@@ -8,7 +8,7 @@ $date = date('Y-m-d');
 echo <<<EOF
         <script src="htmx.min.js"></script>
         <fieldset class=res>
-            <form class=form method=post name=add_form>
+            <form class=form method=post name=add_form  enctype="multipart/form-data">
                 <ol>
                 <li><label for=date>Date</label>
                     <input id=date type=date value="$date" name=date>
@@ -45,6 +45,10 @@ echo <<<EOF
                 </li>
                 <li>
                     <textarea id=n_desc name=n_desc rows=5 cols=40 maxlength =25000 wrap=hard></textarea>
+                </li>
+                <li>
+                    <label for=fileToUpload>Fichiers à ajouter</label>
+                    <input type="file" name="files[]" id="files" multiple>
                 </li>
                 </ol>
                 <input type="submit" value="Ajouter">

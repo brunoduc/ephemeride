@@ -145,16 +145,18 @@ public function liste_cat($type) {
         }
     }
 public function list_all_cat() {
-    $sql_query = "SELECT * FROM category ORDER BY name ASC ";
+//    $sql_query = "SELECT * FROM category ORDER BY name ASC";
+    $sql_query = "select a.category_id as ac, a.name as an, b.name as bn from category as a left join category as b on a.parent = b.category_id ORDER BY an ASC";
     $res=$this->query($sql_query);
     while ($row = $res->fetchArray()) {
-        echo "<option value='$row[category_id]'>$row[name]</option>\n";
+        echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
     }
 }
 public function new_cat($cat, $sub_cat) {
         $cat = $this->clean($cat);
         $cat = ucfirst(strtolower($cat));
         $sql_query = "INSERT INTO `category` (`name`, `parent`) VALUES ('$cat', $sub_cat)";
+        $this->print_debug ($sql_query);
         try {
             $res=$this->query($sql_query);
             $this->new_log("Création de la catégorie $cat réussie", 0);

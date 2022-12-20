@@ -1,4 +1,4 @@
-<?php session_start(); $ephVers="v 0.3.2"?>
+<?php session_start(); $ephVers="v 0.3.4"?>
 <!DOCTYPE html>
 <html lang="fr">
   <head>
@@ -37,6 +37,7 @@
         require_once("ephemeride.php");
         $base_path = realpath('.');
         if (!is_dir("$base_path/db")) { mkdir("$base_path/db",0770); }
+        if (!is_dir("$base_path/users")) { mkdir("$base_path/users",0770); }
         if (isset($_POST['name']) and isset($_POST['passwd'])) {
             $name = $_POST['name'];
             $passwd = $_POST['passwd'];
