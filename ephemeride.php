@@ -110,7 +110,7 @@ public function liste_next_ev() {
         $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date, items.name as name, category.name as cname FROM items, category WHERE
         items.category_id!=1 AND
         items.category_id = category.category_id AND 
-        (date >= date('now') AND date <= DATE('now', '+1 month')) ORDER BY date";
+        (date > date('now') AND date <= DATE('now', '+1 month')) ORDER BY date";
         $this->print_debug ($sql_query);
         $res=$this->query($sql_query);
         
@@ -164,7 +164,18 @@ public function new_cat($cat, $sub_cat) {
         }
 }
 
-public function new_ev($date, $cat, $sub_cat, $n_desc) {
+private function reArrayImages($file_post) {
+            $file_ary = [];
+            $file_keys = array_keys($file_post);
+            foreach ($file_post as $key => $value) {
+            foreach ($value as $key2 => $value2) {
+                $file_ary[$key2][$key] = $value2;
+            }
+            }
+            return $file_ary;
+        }
+
+public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
         $mots = preg_split("/[\s,]+/", $n_desc);
         $tags_array = preg_grep("/^\*/", $mots);
         
@@ -174,8 +185,33 @@ public function new_ev($date, $cat, $sub_cat, $n_desc) {
         $sub_cat      = $this->clean($sub_cat);
         $n_desc       = $this->clean($n_desc);
         if ($sub_cat != "") { $cat = $sub_cat; }
+
+        $haveFile = count($files['name']);
         
-        
+        if ($haveFile) {
+            $n_desc=$n_desc."<div class=files><h5>Fichier :</h5>";
+            $file_ary = $this->reArrayImages($files);
+            foreach ($file_ary as $file) {
+                if (!$file['error']) {
+                    $tfile=$file['tmp_name'];
+                    $nfile=$file['name'];
+                    $pfile="files/$nfile";
+                    $uploaded = move_uploaded_file($tfile, $pfile);
+                    if ($uploaded) {
+                        $n_desc=$n_desc."<a href=\"files/$nfile\" target=\"blank\">$nfile</a> ";
+                        $this->new_log("Fichier $nfile copié", 0);
+                    }
+                }
+            echo "</div>";
+//                 echo '<br>File Name: ' . $file['name'];
+//                 echo '<br>File Type: ' . $file['type'];
+//                 echo '<br>File Size: ' . $file['size'];
+//                 echo '<br>Temp name: ' .$file['tmp_name'];
+//                 echo '<br>Erreur: '    .$file['error'];
+//                 echo '<br>Taille: '    .$file['size'];
+            }
+        }
+
         $this->enableExceptions(true);
         $sql_query = "SELECT COUNT(*) as count FROM items WHERE name= '$n_desc' AND category_id = $cat AND date = '$date'";
         $this->print_debug ($sql_query);
@@ -184,6 +220,7 @@ public function new_ev($date, $cat, $sub_cat, $n_desc) {
             $row = $res->fetchArray();
             if ($row['count'] == 0) { // pas de doublon !
                 $sql_query = "INSERT INTO items (name, category_id, date) VALUES ('$n_desc', '$cat', '$date')";
+                $this->print_debug ($sql_query);
                 try { // On ajoute l'événement
                     $this->query($sql_query);
                     $id_item = $this->lastInsertRowID();
@@ -219,17 +256,17 @@ public function new_ev($date, $cat, $sub_cat, $n_desc) {
                             $this->query($sql_query);
                         }
                         catch(Exception $e) {
-                            $this->new_log($e->getMessage(), 1);
+                            $this->new_log("a ".$e->getMessage(), 1);
                         }
                     }
                 }
                 catch(Exception $e) {
-                    $this->new_log($e->getMessage(), 1);
+                    $this->new_log("b ".$e->getMessage(), 1);
                 }
             }
         }
         catch(Exception $e) {
-            $this->new_log($e->getMessage(), 1);
+            $this->new_log("$sql_query c ".$e->getMessage(), 1);
         }
     }
 

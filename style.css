@@ -16,6 +16,12 @@ main {
 
 h1,h2,h3 { text-align: center; text-shadow: 2px 2px 5px #9D78AD; }
 h1 {margin-top:10px;}
+.files { padding-left: 5em; }
+.files > h5 {
+    margin: 0px;
+    font-size: inherit;
+    text-decoration: underline;
+}
 
 ul {margin:0px; padding:0px;}
 .svg_nav { max-height:2em;}
@@ -212,6 +218,14 @@ input[type=range].e::-moz-range-track {
 input[type="range"].e::-moz-range-progress {
   background-color: green;
 }
+input[type="range"] {
+    font-size: medium;
+}
+input[type="file"] {
+    font-size:inherit;
+    border:solid 1px;
+}
+
 
 footer {
     padding: 0.5em;

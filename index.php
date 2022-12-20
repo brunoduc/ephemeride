@@ -55,6 +55,7 @@
                     if ($eph->init_table()) {
                         $_SESSION['connected'] = TRUE;
                         $_SESSION['base'] = $filename;
+                        $_SESSION['user'] = $name;
                         $eph->new_log("Utilistateur enregistré", 0);
                     }
                 }
@@ -96,7 +97,7 @@ EOF;
                 }
                 // Ajout d'une entrée événement
                 if (!empty($_POST['date']) and !empty($_POST['n_desc'])) {
-                    $eph->new_ev($_POST['date'], $_POST['type'], $_POST['sub_cat'], $_POST['n_desc']);
+                    $eph->new_ev($_POST['date'], $_POST['type'], $_POST['sub_cat'], $_POST['n_desc'], $_FILES['files']);
                     // $eph->print_log();
                 }
             }
