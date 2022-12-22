@@ -30,7 +30,7 @@ echo <<<EOF
                 </li>
 
                 <li><label for=n_desc style="flex-grow:3; width:auto">Description</label>
-                    <span class="span_ta" viewBox="0 0 15 15" onclick='document.getElementById("n_desc").value = document.getElementById("n_desc").value+"&nbsp;";
+                    <span class="span_ta" onclick='document.getElementById("n_desc").value = document.getElementById("n_desc").value+"&nbsp;";
                     document.getElementById("n_desc").focus();
                     document.getElementById("n_desc").setSelectionRange(document.getElementById("n_desc").value.length,document.getElementById("n_desc").value.length);
                     '>&amp;nbsp;</span>

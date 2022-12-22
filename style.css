@@ -65,7 +65,7 @@ form input[type = submit] {
     background-color:#90f080;
     border-radius: 25px;
     cursor:pointer;
-    font-size: large;
+    font-size: initial;
 }
 
 legend.legend {
@@ -102,11 +102,12 @@ ol , ul {
 
 
 form label {
-    padding: 6px 26px 0px;
+/*     padding: 6px 26px 0px; */
     margin: 0px;
     box-sizing: border-box;
     border-radius: 4px;
     width:100%;
+    font-weight: bold;
 }
 
 form select {
@@ -120,6 +121,7 @@ form select {
 
 form textarea {
     width:100%;
+    border-radius: 10px;
 }
 
 .img_ta {
@@ -132,7 +134,7 @@ form textarea {
 }
 .span_ta {
     float: right;
-    padding:8px 8px 0 8px;
+/*     padding:8px 8px 0 8px; */
     font-size: small;
     font-stretch: condensed;
     font-weight: bold;
@@ -224,7 +226,10 @@ input[type="range"] {
 }
 input[type="file"] {
     font-size:inherit;
-    border:solid 1px;
+    border:solid #bbb 1px;
+    text-align: center;
+    border-top-width: 2px;
+    border-left-width: 2px;
 }
 
 
@@ -281,7 +286,7 @@ form.form input.w20, form.form output.w20 {
     margin: 50px auto; 
 } 
 .img_ta {
-    margin:8px;
+/*     margin:8px; */
 }
 #nav li {
     flex-grow: 0.04;
