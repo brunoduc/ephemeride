@@ -110,6 +110,10 @@ form label {
     font-weight: bold;
 }
 
+.help {
+    cursor:help;
+}
+
 form select {
     padding: 12px 16px;
     margin: 6px 0;
@@ -120,7 +124,7 @@ form select {
 }
 form select:hover {
     cursor:pointer;
-    background-color: #fafaf1;
+    background-color: #f0f0ff;
 }
 
 form textarea {

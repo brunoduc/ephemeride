@@ -48,7 +48,8 @@ echo <<<EOF
                     <textarea id=n_desc name=n_desc rows=5 cols=40 maxlength =25000 wrap=hard></textarea>
                 </li>
                 <li>
-                    <label for=files>Fichiers à ajouter ($maxSize MAX !)</label> 
+                    <label for=files class="help" title="Toute erreur liée aux fichiers empécherra l'enregistrement de l'événement.
+Le nom du fichier de doit pas déjà existé, et la taille doit être inférieur à $maxSize.">Fichiers à ajouter ($maxSize MAX !)</label> 
                     <!-- <input type="checkbox" id="d" name="d" style="width: auto; margin-right: 10px;" >
                     <label for="d"  style="width: auto;"> Autoriser les liens vers des fichiers existants</label> -->
                     <!-- <input type="hidden" name="MAX_FILE_SIZE" value="8388608" /> -->
