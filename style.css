@@ -159,10 +159,11 @@ form textarea {
     cursor:pointer;
 }
 #cde { display:none; }
-.message {
+.message p {
     display: flex;
-    justify-content: center;
+    align-items: normal;
 }
+
 
 
 
@@ -282,8 +283,8 @@ form.form input.w20, form.form output.w20 {
     text-align:center;
 }
 .message { 
-    width: 500px;
-    margin: 50px auto; 
+    width: fit-content;
+    margin: 5px auto; 
 } 
 .img_ta {
 /*     margin:8px; */

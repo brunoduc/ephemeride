@@ -1,4 +1,4 @@
-<?php session_start(); $ephVers="v 0.3.4"?>
+<?php session_start(); $ephVers="v 0.4.0"?>
 <!DOCTYPE html>
 <html lang="fr">
   <head>
@@ -36,13 +36,14 @@
     <?php
         require_once("ephemeride.php");
         $base_path = realpath('.');
-        if (!is_dir("$base_path/db")) { mkdir("$base_path/db",0770); }
         if (!is_dir("$base_path/users")) { mkdir("$base_path/users",0770); }
+//        if (!is_dir("$base_path/users/db")) { mkdir("$base_path/users/db",0770); }
+        
         if (isset($_POST['name']) and isset($_POST['passwd'])) {
             $name = $_POST['name'];
             $passwd = $_POST['passwd'];
             $connected = hash('sha256', $name.$passwd);
-            $filename = $base_path.'/db/'.$connected.'.db';
+            $filename = $base_path.'/users/'.$connected.'/base.sqlite3';
             if (file_exists($filename)) {
                 $_SESSION['connected'] = TRUE;
                 $_SESSION['base'] = $filename;
@@ -51,11 +52,16 @@
                 $eph = new ephemeride($filename);
             }
             else {
-                if ((count(scandir($base_path.'/db')) < 3) or ((isset($_POST['cde']) and $_POST['cde']=="0000"))) {
+                
+                if ((count(scandir($base_path.'/users')) < 3) or ((isset($_POST['cde']) and $_POST['cde']=="0000"))) {
+                    echo "<hr>".count(scandir($base_path.'/users')).'<hr>';
+                    mkdir("$base_path/users/$connected", 0700);
                     $eph = new ephemeride($filename);
+                    echo '<hr>';
                     if ($eph->init_table()) {
                         $_SESSION['connected'] = TRUE;
                         $_SESSION['base'] = $filename;
+                        $_SESSION['base_name'] = $connected;
                         $_SESSION['user'] = $name;
                         $eph->new_log("Utilistateur enregistré", 0);
                     }
@@ -114,7 +120,7 @@ echo <<<EOF
                 <li><input type="text" class="form-control" name="name" placeholder="Nom" autofocus></li>
                 <li><input type="password" class="form-control" name="passwd" placeholder="Mot de passe"></li>
 EOF;
-if (count(scandir($base_path.'/db')) > 2) {
+if (count(scandir($base_path.'/users')) > 2) {
 echo <<<EOF
                 <li id='cde'><input id='a' type="text" class="form-control" name="cde" placeholder="Code"></li>
                 <li id='lien' onclick='document.getElementById("cde").style.display="flex";document.getElementById("a").focus();document.getElementById("lien").style.display="none";document.getElementById("sub").value="Créer l&#39;utilisateur";'>Créer l'utilisateur</li>
@@ -153,7 +159,7 @@ EOF;
     
     </main>
     <footer>
-        <span><?php echo $ephVers; ?></span><ul><li><a class="ref_menu" title="backup de la base" href="db/<?php echo $connected; ?>.db"> <img src="a1.svg" width="20px" alt="backup"><span>Base</span></a></li></ul>
+        <span><?php echo $ephVers; ?></span><ul><li><a class="ref_menu" title="backup de la base" href="users/<?php echo $_SESSION['base_name']; ?>/base.sqlite3"> <img src="a1.svg" width="20px" alt="backup"><span>Base</span></a></li></ul>
 
     </footer>
   </body>

@@ -4,6 +4,7 @@ include_once('../ephemeride.php');
 $eph = new ephemeride($_SESSION['base']);
 
 $date = date('Y-m-d');
+$maxSize = ini_get('post_max_size');
 
 echo <<<EOF
         <script src="htmx.min.js"></script>
@@ -34,7 +35,7 @@ echo <<<EOF
                     document.getElementById("n_desc").focus();
                     document.getElementById("n_desc").setSelectionRange(document.getElementById("n_desc").value.length,document.getElementById("n_desc").value.length);
                     '>&amp;nbsp;</span>
-                    <svg class="img_ta" viewBox="0 0 15 15" onclick='document.getElementById("n_desc").value = document.getElementById("n_desc").value+"<br>\\n";
+                    <svg class="img_ta" viewBox="0 0 15 15" onclick='document.getElementById("n_desc").value = document.getElementById("n_desc").value+"\\n";
                     document.getElementById("n_desc").focus();
                     document.getElementById("n_desc").setSelectionRange(document.getElementById("n_desc").value.length,document.getElementById("n_desc").value.length);
                     '><use xlink:href="#enter"/></svg>
@@ -47,7 +48,10 @@ echo <<<EOF
                     <textarea id=n_desc name=n_desc rows=5 cols=40 maxlength =25000 wrap=hard></textarea>
                 </li>
                 <li>
-                    <label for=fileToUpload>Fichiers à ajouter</label>
+                    <label for=files>Fichiers à ajouter ($maxSize MAX !)</label> 
+                    <!-- <input type="checkbox" id="d" name="d" style="width: auto; margin-right: 10px;" >
+                    <label for="d"  style="width: auto;"> Autoriser les liens vers des fichiers existants</label> -->
+                    <!-- <input type="hidden" name="MAX_FILE_SIZE" value="8388608" /> -->
                     <input type="file" name="files[]" id="files" multiple>
                 </li>
                 </ol>

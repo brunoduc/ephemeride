@@ -36,7 +36,8 @@ public function init_table() {
     CREATE TABLE IF NOT EXISTS category (
         category_id INTEGER PRIMARY KEY AUTOINCREMENT,
         name CHAR(80) NOT NULL,
-        parent INTEGER NULL)
+        parent INTEGER NULL,
+        UNIQUE (name,parent))
         ','
     CREATE TABLE IF NOT EXISTS items (
         item_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,7 +87,7 @@ public function liste_birthday() {
         
         $test=$res->fetchArray();
         
-        if ($test[item_id]) {
+        if ($test['item_id']) {
             $res->reset();
             echo "<h3>Prochains anniversaires</h3>";
             echo "<fieldset class=res><ul>";
@@ -116,7 +117,7 @@ public function liste_next_ev() {
         
         $test=$res->fetchArray();
         
-        if ($test[item_id]) {
+        if ($test['item_id']) {
             $res->reset();
             echo "<h3>Prochains événements</h3>";
             echo "<fieldset class=res><ul>";
@@ -145,7 +146,6 @@ public function liste_cat($type) {
         }
     }
 public function list_all_cat() {
-//    $sql_query = "SELECT * FROM category ORDER BY name ASC";
     $sql_query = "select a.category_id as ac, a.name as an, b.name as bn from category as a left join category as b on a.parent = b.category_id ORDER BY an ASC";
     $res=$this->query($sql_query);
     while ($row = $res->fetchArray()) {
@@ -153,8 +153,17 @@ public function list_all_cat() {
     }
 }
 public function new_cat($cat, $sub_cat) {
-        $cat = $this->clean($cat);
-        $cat = ucfirst(strtolower($cat));
+    $cat = $this->clean($cat);
+    $cat = ucfirst(strtolower($cat));
+    $sql_query = "SELECT COUNT(*) AS count from category WHERE name='$cat' AND parent = '$sub_cat'";
+    $this->print_debug ($sql_query);
+    $res=$this->query($sql_query);
+    $row = $res->fetchArray();
+    
+    if ($row['count']) {
+        $this->new_log("Le couple catégorie/sous catégorie existe déjà !", 1);
+    }
+    else {
         $sql_query = "INSERT INTO `category` (`name`, `parent`) VALUES ('$cat', $sub_cat)";
         $this->print_debug ($sql_query);
         try {
@@ -164,57 +173,80 @@ public function new_cat($cat, $sub_cat) {
         catch(Exception $e) {
             $this->new_log($e->getMessage(), 1);
         }
+    }
 }
 
 private function reArrayImages($file_post) {
-            $file_ary = [];
-            $file_keys = array_keys($file_post);
-            foreach ($file_post as $key => $value) {
-            foreach ($value as $key2 => $value2) {
-                $file_ary[$key2][$key] = $value2;
-            }
-            }
-            return $file_ary;
+    $file_ary = [];
+    $file_keys = array_keys($file_post);
+    foreach ($file_post as $key => $value) {
+        foreach ($value as $key2 => $value2) {
+            $file_ary[$key2][$key] = $value2;
         }
+    }
+    return $file_ary;
+}
 
 public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
-        $mots = preg_split("/[\s,]+/", $n_desc);
-        $tags_array = preg_grep("/^\*/", $mots);
-        
-        $n_desc = str_replace("*", "", "$n_desc");
-        $date         = $this->clean($date);
-        $cat          = $this->clean($cat);
-        $sub_cat      = $this->clean($sub_cat);
-        $n_desc       = $this->clean($n_desc);
-        if ($sub_cat != "") { $cat = $sub_cat; }
-
-        $haveFile = count($files['name']);
-        
-        if ($haveFile) {
-            $n_desc=$n_desc."<div class=files><h5>Fichier :</h5>";
-            $file_ary = $this->reArrayImages($files);
-            foreach ($file_ary as $file) {
-                if (!$file['error']) {
-                    $tfile=$file['tmp_name'];
-                    $nfile=$file['name'];
-                    $pfile="files/$nfile";
+    $mots = preg_split("/[\s,]+/", $n_desc);
+    $tags_array = preg_grep("/^\*/", $mots);
+    
+    $n_desc = str_replace("*", "", "$n_desc");
+    $date         = $this->clean($date);
+    $cat          = $this->clean($cat);
+    $sub_cat      = $this->clean($sub_cat);
+    $n_desc       = $this->clean($n_desc);
+    if ($sub_cat != "") { $cat = $sub_cat; }
+    
+    $file_ary = $this->reArrayImages($files);
+    $haveError = $file_ary[0]['error'];
+    
+    $error_tab = array(
+        0 => "Pas d'Erreur !",
+        1 => "La Taille du fichier envoyé excède la limite autorisé dans php.ini", // NE MARCHE PAS (Pas de message d'erreur, ni aucun enregistrement)
+        2 => "La Taille du fichier envoyé excède la limite MAX_FILE_SIZE du formulaire html",
+        3 => "Fichier partiellement téléchargé",
+        4 => "Pas de fichier téléchargé",
+        5 => "Pas de répertoire temporaire",
+        6 => "Impossible d'écrire le fichier sur le disque",
+        7 => "File upload stopped by extension",
+    );
+    if (!$haveError) {
+        $n_desc=$n_desc."<div class=files><h5>Fichier :</h5>";
+        foreach ($file_ary as $file) {
+            $haveError = $file['error'];
+            if (!$haveError) {
+                $tfile=$file['tmp_name'];
+                $nfile=$file['name'];
+                $pfile="users/".$_SESSION[base_name]."/$nfile";
+                if (!file_exists($pfile)) {
                     $uploaded = move_uploaded_file($tfile, $pfile);
                     if ($uploaded) {
-                        $n_desc=$n_desc."<a href=\"files/$nfile\" target=\"blank\">$nfile</a> ";
+                        $n_desc=$n_desc."<a href=\"users/$_SESSION[base_name]/$nfile\" target=\"blank\">$nfile</a> ";
                         $this->new_log("Fichier $nfile copié", 0);
                     }
                 }
-            echo "</div>";
-//                 echo '<br>File Name: ' . $file['name'];
-//                 echo '<br>File Type: ' . $file['type'];
-//                 echo '<br>File Size: ' . $file['size'];
-//                 echo '<br>Temp name: ' .$file['tmp_name'];
-//                 echo '<br>Erreur: '    .$file['error'];
-//                 echo '<br>Taille: '    .$file['size'];
+                else { 
+                    $this->new_log("Erreur : le fichier $nfile existait ! : Pas d'enregistrement !",1); 
+                    $abort=TRUE;
+                }
+            }
+            elseif ($haveError != 4) {
+                $this->new_log("$error_tab[$haveError] : Pas d'enregistrement !", 1);
+                $abort=TRUE;
             }
         }
-
+        $n_desc=$n_desc."</div>";
+    }
+    elseif ($haveError != 4) {
+        $this->new_log("$error_tab[$haveError]", 1);
+    }
+    
+    if (isset($message)) { $this->new_log("$message", 1); }
+    
+    if (!$abort) {
         $this->enableExceptions(true);
+        $n_desc = str_replace("'", "&apos;", $n_desc);
         $sql_query = "SELECT COUNT(*) as count FROM items WHERE name= '$n_desc' AND category_id = $cat AND date = '$date'";
         $this->print_debug ($sql_query);
         try { // pour vérifier qu'il n'y aura pas de doublon
@@ -271,147 +303,149 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
             $this->new_log("$sql_query c ".$e->getMessage(), 1);
         }
     }
+}
 
 public function minmax() {
-        try {
-            $query = "SELECT strftime('%s',min(date)) min, strftime('%s',max(date)) max, min(date) min_d, max(date) max_d from items";
-            $res = $this->query($query);
-            if($res==FALSE)
-            {
-                echo "Error in fetch ".$this->lastErrorMsg();
-            }
-            else {
-                return $res->fetchArray();
-            }
+    try {
+        $query = "SELECT strftime('%s',min(date)) min, strftime('%s',max(date)) max, min(date) min_d, max(date) max_d from items";
+        $res = $this->query($query);
+        if($res==FALSE)
+        {
+            echo "Error in fetch ".$this->lastErrorMsg();
         }
-        catch(Exception $e) {
-            $this->new_log($e->getMessage(), 1);
-            $this->print_log();
+        else {
+            return $res->fetchArray();
         }
     }
+    catch(Exception $e) {
+        $this->new_log($e->getMessage(), 1);
+        $this->print_log();
+    }
+}
 
 public function list_all_tag() {
-        try {
-            $sql_query = "SELECT * FROM tags ORDER BY name ASC ";
-            $res=$this->query($sql_query);
-            while ($row = $res->fetchArray()) {
-                echo "<option value='$row[tag_id]'>$row[name]</option>\n";
-            }
-        }
-        catch(Exception $e) {
-            $this->new_log($e->getMessage(), 1);
+    try {
+        $sql_query = "SELECT * FROM tags ORDER BY name ASC ";
+        $res=$this->query($sql_query);
+        while ($row = $res->fetchArray()) {
+            echo "<option value='$row[tag_id]'>$row[name]</option>\n";
         }
     }
+    catch(Exception $e) {
+        $this->new_log($e->getMessage(), 1);
+    }
+}
 
-    public function find_by_tag($find_tag,$debut,$fin) {
-        date_default_timezone_set('Europe/Paris');
-        $debut=date('Y-m-d',$debut);
-        $fin=date('Y-m-d',$fin);
-        $sql_query = "select category.name as cname, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name, tags.name as tags
-        FROM items, items_has_tags i, tags, category
-        WHERE items.item_id = i.item_id AND i.tag_id = tags.tag_id and items.category_id = category.category_id 
-        AND tags.tag_id = $find_tag
-        AND date >= '$debut'
-        AND date <= '$fin'
-        ORDER BY date DESC
-        ";
-        
-        $this->print_debug ($sql_query);
-        
-        try {
-            $res=$this->query($sql_query);
-            if ($res) {
-                echo "<fieldset class=res><ul>";
-                while ($row = $res->fetchArray()) {
-                    echo "<li><span class=date>$row[date_f]</span> - Catégorie : $row[cname]";
-                    echo "<br>$row[name]\n";
-                }
-                echo "</ul></fieldset>";
-            }
-        }
-        catch(Exception $e) {
-            $this->new_log($e->getMessage(), 1);
-        }
-    }
+public function find_by_tag($find_tag,$debut,$fin) {
+    date_default_timezone_set('Europe/Paris');
+    $debut=date('Y-m-d',$debut);
+    $fin=date('Y-m-d',$fin);
+    $sql_query = "select category.name as cname, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name, tags.name as tags
+    FROM items, items_has_tags i, tags, category
+    WHERE items.item_id = i.item_id AND i.tag_id = tags.tag_id and items.category_id = category.category_id 
+    AND tags.tag_id = $find_tag
+    AND date >= '$debut'
+    AND date <= '$fin'
+    ORDER BY date DESC
+    ";
     
-    public function find_by_cat($find_cat,$debut,$fin) {
-        date_default_timezone_set('Europe/Paris');
-        $debut=date('Y-m-d',$debut);
-        $fin=date('Y-m-d',$fin);
-        
-        $sql_query = "SELECT item_id as i, category.name as cname, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name,  items.item_id
-            FROM category, items
-            WHERE  items.category_id = category.category_id 
-            AND (items.category_id=$find_cat 
-            OR items.category_id IN (SELECT category_id FROM category WHERE parent = $find_cat))
-            AND date BETWEEN '$debut' AND '$fin'
-            ORDER by date DESC";
-            
-        $this->print_debug ($sql_query);
-        
-        try {
-            $res=$this->query($sql_query);
-            if ($res) {
-                echo "<fieldset class=res><ul>";
-                while ($row = $res->fetchArray()) {
-                    echo "<li><span class=date>$row[date_f]</span>";
-                    
-                    $sql_query2 = "select name from tags left join items_has_tags  on tags.tag_id = items_has_tags.tag_id where items_has_tags.item_id= $row[i]";
-                    $this->print_debug ("<p>$sql_query2</p>");
-                    $res2 = $this->query($sql_query2);
-                    echo " Étiquettes : ";
-                    while ($row2 = $res2->fetchArray()) {
-                        echo "$row2[name] ";
-                    }
-                    
-                    echo "<br>$row[name]</li>\n";
-                }
-                echo "</ul></fieldset>";
+    $this->print_debug ($sql_query);
+    
+    try {
+        $res=$this->query($sql_query);
+        if ($res) {
+            echo "<fieldset class=res><ul>";
+            while ($row = $res->fetchArray()) {
+                echo "<li><span class=date>$row[date_f]</span> - Catégorie : $row[cname]";
+                echo "<br>$row[name]\n";
             }
-        }
-        catch(Exception $e) {
-            $this->new_log($e->getMessage(), 1);
+            echo "</ul></fieldset>";
         }
     }
+    catch(Exception $e) {
+        $this->new_log($e->getMessage(), 1);
+    }
+}
+    
+public function find_by_cat($find_cat,$debut,$fin) {
+    date_default_timezone_set('Europe/Paris');
+    $debut=date('Y-m-d',$debut);
+    $fin=date('Y-m-d',$fin);
+    
+    $sql_query = "SELECT item_id as i, category.name as cname, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name,  items.item_id
+        FROM category, items
+        WHERE  items.category_id = category.category_id 
+        AND (items.category_id=$find_cat 
+        OR items.category_id IN (SELECT category_id FROM category WHERE parent = $find_cat))
+        AND date BETWEEN '$debut' AND '$fin'
+        ORDER by date DESC";
+        
+    $this->print_debug ($sql_query);
+    
+    try {
+        $res=$this->query($sql_query);
+        if ($res) {
+            echo "<fieldset class=res><ul>";
+            while ($row = $res->fetchArray()) {
+                echo "<li><span class=date>$row[date_f]</span>";
+                
+                $sql_query2 = "select name from tags left join items_has_tags  on tags.tag_id = items_has_tags.tag_id where items_has_tags.item_id= $row[i]";
+                $this->print_debug ("<p>$sql_query2</p>");
+                $res2 = $this->query($sql_query2);
+                echo " Étiquettes : ";
+                while ($row2 = $res2->fetchArray()) {
+                    echo "$row2[name] ";
+                }
+                
+                echo "<br>$row[name]</li>\n";
+            }
+            echo "</ul></fieldset>";
+        }
+    }
+    catch(Exception $e) {
+        $this->new_log($e->getMessage(), 1);
+    }
+}
     
 private function clean($data) {
     $data = trim($data);
     $data = str_replace("'", "&apos;", $data);
     $data = nl2br($data);
     return $data;
-    }
+}
 
 
 
 // Gestion des logs
 
 public function new_log($log, $type) {
-        if ($type!=0) {
-            $new_log = "<div class=message><span class=red><svg viewBox='0 0 15 15' class='l_icon'><use xlink:href='#bad'/></svg></span><span class=logs> $log</span></div>\n";
-        }
-        else {
-            $new_log = "<div class=message><span class=green><svg viewBox='0 0 15 15' class='l_icon'><use xlink:href='#good'/></svg></span><span class=logs>$log</span></div>\n";
-        }
-        $_SESSION['log'] = $_SESSION['log'].$new_log;
+    if ($type!=0) {
+        $new_log = "<p><span class=red><svg viewBox='0 0 15 15' class='l_icon'><use xlink:href='#bad'/></svg></span><span class=logs> $log</span></p>\n";
     }
+    else {
+        $new_log = "<p><span class=green><svg viewBox='0 0 15 15' class='l_icon'><use xlink:href='#good'/></svg></span><span class=logs>$log</span></p>\n";
+    }
+    $_SESSION['log'] = $_SESSION['log'].$new_log;
+}
     
 public function aff_log($log, $type) {
-        $this->new_log($log, $type);
-        $this->print_log();
-    }
+    $this->new_log($log, $type);
+    $this->print_log();
+}
     
 public function print_log() {
-        if (isset($_SESSION['log'])) {
-            if ($_SESSION['log']!="") {
-                echo $_SESSION['log'];
-                $_SESSION['log']="";
-            }
+    if (isset($_SESSION['log'])) {
+        if ($_SESSION['log']!="") {
+            echo "<h3>Messages</h3>";
+            echo "<div class=message>".$_SESSION['log']."</div>";
+            $_SESSION['log']="";
         }
     }
+}
     
 public function clean_log() {
-        $_SESSION['log']!="";
-    }
+    $_SESSION['log']!="";
+}
 
 }
 ?>
