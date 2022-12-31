@@ -153,14 +153,16 @@ EOF;
                     // Affichage des prochains événements
                     $eph->liste_next_ev();
                 }
+                $eph->print_log();
             }
-            $eph->print_log();
         ?>
     
     </main>
     <footer>
-        <span><?php echo $ephVers; ?></span><ul><li><a class="ref_menu" title="backup de la base" href="users/<?php echo $_SESSION['base_name']; ?>/base.sqlite3"> <img src="a1.svg" width="20px" alt="backup"><span>Base</span></a></li></ul>
-
-    </footer>
+        <span><?php echo $ephVers; ?></span>
+        <ul>
+            <?php if (isset($_SESSION['connected'])) { echo '<li><a class="ref_menu" title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"> <img src="a1.svg" width="20px" alt="backup"><span>Base</span></a></li>'; } ?>
+        </ul>
+     </footer>
   </body>
 </html>

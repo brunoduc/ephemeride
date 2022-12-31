@@ -118,6 +118,10 @@ form select {
     background-color: #f1f1f1;
     width:100%;
 }
+form select:hover {
+    cursor:pointer;
+    background-color: #fafaf1;
+}
 
 form textarea {
     width:100%;
