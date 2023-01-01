@@ -35,6 +35,7 @@ ul {margin:0px; padding:0px;}
     margin: .5em 0 .5em 0;
 }
 .mono-col > li > input {
+    font-size:120%;
 }
 
 fieldset.res {
@@ -43,41 +44,6 @@ fieldset.res {
     border-radius: 25px;
     box-shadow: 5px 5px 30px 5px rgba(0,0,0,0.5);
 } 
-
-form.form > ol {
-    padding:0;
-    margin:0;
-    list-style-type:none;
-}
-
-form input {
-    padding: 12px 16px;
-    box-sizing: border-box;
-    border-radius: 10px;
-    width:100%;
-}
-
-form input[type = submit] {
-    margin: 10px auto;
-    padding:12px 30px 12px 30px;
-    display: block;
-    width: auto;
-    background-color:#90f080;
-    border-radius: 25px;
-    cursor:pointer;
-    font-size: initial;
-}
-
-legend.legend {
-    border-color: #a3aba3;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 5px;
-    background-color:#d5dbec;
-    font-size: 1.2em;
-    font-weight: bold;
-    padding: 4px 20px 0px 20px;
-}
 
 ol li {
     display: flex;
@@ -91,6 +57,64 @@ ol li {
 ol , ul {
     list-style: none;
     padding:0px;
+}
+
+form.form > ol {
+    padding:0;
+    margin:0;
+    list-style-type:none;
+}
+
+form input , form select {
+    padding: 10px 16px;
+    border-radius: 10px;
+    width:100%;
+}
+
+form input {
+    box-sizing: border-box;
+}
+
+form input[type = submit] {
+    margin: 10px auto;
+    padding:12px 30px 12px 30px;
+    display: block;
+    width: auto;
+    background-color:#80ff80;
+    border-radius: 25px;
+    cursor:pointer;
+    font-size:1.1em;
+}
+
+form select {
+    margin: 6px 0;
+    border: none;
+    background-color: #f1f1f1;
+}
+form select:hover {
+    cursor:pointer;
+    background-color: #f0f0ff;
+}
+
+form textarea {
+    width:100%;
+    border-radius: 10px;
+}
+
+.message { 
+    width: fit-content;
+    margin: 5px auto; 
+}
+
+legend.legend {
+    border-color: #a3aba3;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color:#d5dbec;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 4px 20px 0px 20px;
 }
 
 .date {
@@ -114,24 +138,6 @@ form label {
     cursor:help;
 }
 
-form select {
-    padding: 12px 16px;
-    margin: 6px 0;
-    border: none;
-    border-radius: 10px;
-    background-color: #f1f1f1;
-    width:100%;
-}
-form select:hover {
-    cursor:pointer;
-    background-color: #f0f0ff;
-}
-
-form textarea {
-    width:100%;
-    border-radius: 10px;
-}
-
 .img_ta {
     max-height: 1.6em;
     float: right;
@@ -151,11 +157,12 @@ form textarea {
 .span_ta:hover { cursor:pointer; }
 .green { fill:green; }
 .red { fill:red; } 
-.l_icon { height : 2em; }
+.l_icon { height : 1.2em; }
 .logs {
     padding-left: .8em;
-    margin-top: .5em;
-    /*flex-grow: 3;*/
+    /*margin-top: .5em;
+    flex-grow: 3;*/
+    font-size:0.9em;
 }
 #lien {
     display: block;
@@ -290,10 +297,13 @@ form.form input.w20, form.form output.w20 {
     height: 1.5em;
     text-align:center;
 }
-.message { 
-    width: fit-content;
-    margin: 5px auto; 
-} 
+form input , form select {
+    font-size: 1.1em;
+}
+
+.logs {
+    font-size:1em;
+}
 .img_ta {
 /*     margin:8px; */
 }
@@ -304,7 +314,6 @@ form.form input.w20, form.form output.w20 {
     font-size:120%;
 }
 .mono-col > li > input {
-    font-size:120%;
 }
     
 }

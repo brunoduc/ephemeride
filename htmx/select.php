@@ -8,7 +8,8 @@
         echo "<!-- sql = $sql_query -->";
     if ($res = $eph->query($sql_query)) {
     while ($row = $res->fetchArray()) {
-        echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
+//        echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
+        echo "<option value='$row[ac]'>$row[an]</option>\n";
     }
     echo "<option></option>";
     }
