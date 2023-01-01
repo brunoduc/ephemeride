@@ -1,0 +1,27 @@
+- update <select> for sub cat css
+- v 0.4.1
+- - Footer avant connection - css form select
+- rajout de l'icone
+- Ajout de la possibilité d'ajouter un fichier. - Si une erreur survient (Nom de fichier existant, taille trop grande ...) l'enregistremnet de l'évement n'est pas réalisé ! - Pas de gestion de fichiers malveillants : tout est accepté !
+- css Ajout des fichiers
+- Merge branch 'master' of https://github.com/brunoduc/ephemeride
+- Version 0.3.4 Possibilité d'ajout de fichiers Choix des <select>  restreint
+- Update README.md
+- Possibilité d'ajouter des fichiers css prochains événements ->   > au lieu de >=
+- Ajout d'un bouton pour télécharger la base
+- Déactivation des messges de DEBUG
+- Correction requête SQL sur la liste des anniversaires
+- Version 0.3.1 Affichage des anniversaires et des événements à venir dans la page d'accueil.
+- Amélioration de la page d'accueil (dates)
+- Amélioration de l'affichage des prochains événements et anniversaires.
+- Ajout des nouveaux événements
+- Ajout de l'affichage des anniversaires
+- Merge branch 'master' of https://github.com/brunoduc/ephemeride
+- Modifications dans la création d'utilisateurs
+- sync
+- Update README.md
+- Création du répertoire db s'il n'existe pas.
+- Merge https://github.com/brunoduc/ephemeride
+- Fichiers initiaux
+- Fichiers initiaux
+- Initial commit
