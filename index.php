@@ -123,7 +123,6 @@ EOF;
 if (count(scandir($base_path.'/users')) > 2) {
 echo <<<EOF
                 <li id='cde'><input id='a' type="text" class="form-control" name="cde" placeholder="Code"></li>
-                <li id='lien' onclick='document.getElementById("cde").style.display="flex";document.getElementById("a").focus();document.getElementById("lien").style.display="none";document.getElementById("sub").value="Créer l&#39;utilisateur";'>Créer l'utilisateur</li>
 EOF;
 }
 echo <<<EOF
@@ -161,7 +160,16 @@ EOF;
     <footer>
         <span><?php echo $ephVers; ?></span>
         <ul>
-            <?php if (isset($_SESSION['connected'])) { echo '<li><a class="ref_menu" title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"> <img src="a1.svg" width="20px" alt="backup"><span>Base</span></a></li>'; } ?>
+            <?php 
+            if (isset($_SESSION['connected'])) { 
+                echo '<li><a class="ref_menu" title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"> <img src="a1.svg" width="20px" alt="backup"><span>Base</span></a></li>'; 
+            }
+            else {
+echo <<<EOF
+                <li style="padding:0px;" id='lien' onclick='document.getElementById("cde").style.display="flex";document.getElementById("a").focus();document.getElementById("lien").style.display="none";document.getElementById("sub").value="Créer l&#39;utilisateur";' title="Ajouter un utilisateur"><img src="a2.svg" width="30px" alt="add user"></li>
+EOF;
+            }
+            ?>
         </ul>
      </footer>
   </body>
