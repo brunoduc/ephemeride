@@ -194,6 +194,16 @@ input[type=range] {
 	padding: 0;	
 	/* your slider styles 
 }*/
+form.form output.w20 {
+    text-align:center;
+    width: 100%;
+}
+form.form input.w20 {
+    width:49%;
+    margin:0.5%;
+    padding:0;
+}
+    
 input[type=range]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	box-sizing: content-box;
@@ -229,10 +239,10 @@ input[type=range].s::-moz-range-track {
   background-color: green;
 }
 input[type="range"].s::-moz-range-progress {
-  background-color: #43e5f7;
+  background-color: #ccc;
 }
 input[type=range].e::-moz-range-track {
-  background-color: #43e5f7;
+  background-color: #ccc;
 }
 input[type="range"].e::-moz-range-progress {
   background-color: green;
@@ -295,7 +305,6 @@ input.form-control { width:400px;}
 form.form input.w20, form.form output.w20 {
     width: 24%;
     height: 1.5em;
-    text-align:center;
 }
 form input , form select {
     font-size: 1.1em;
