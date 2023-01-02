@@ -1,3 +1,6 @@
+- Modification de la création d'utilisteur (Icone en bas de page).
+- css
+- add CHANGELOG.md
 - update <select> for sub cat css
 - v 0.4.1
 - - Footer avant connection - css form select
