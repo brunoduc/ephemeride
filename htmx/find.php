@@ -67,7 +67,7 @@ function convertTimestamp(timestamp) {
             <li><label for=find_cat>Catégorie</label>
                 <select name=find_cat id=find_cat onchange="document.forms.find_form.submit();">
 EOF;
-$eph->list_all_cat();
+$eph->list_use_cat();
 echo <<<EOF
                     <option selected> </option>
                 </select>

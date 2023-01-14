@@ -9,6 +9,12 @@ public $db;
 private $log="";
 private $debug=FALSE;
 
+// public $ALLOWED_FILES = [
+//         'image/png' => 'png',
+//         'image/jpeg' => 'jpg',
+//         'application/pdf' => 'pdf'
+//     ];
+
 function __construct(string $db) {
     $_SESSION['log']="";
      try {
@@ -75,7 +81,7 @@ public function init_table() {
 
 public function liste_birthday() {
     try {
-        $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date, name FROM items WHERE 
+        $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date_f, name as datas FROM items WHERE 
         (category_id=1) AND (
         (strftime('%d', `date`) >= strftime('%d', 'now')) AND
         (strftime('%m', `date`) = strftime('%m', 'now')) OR (
@@ -89,13 +95,7 @@ public function liste_birthday() {
         
         if ($test['item_id']) {
             $res->reset();
-            echo "<h3>Prochains anniversaires</h3>";
-            echo "<fieldset class=res><ul>";
-            while ($row = $res->fetchArray()) {
-                echo "<li><span class=date>$row[date]</span>";
-                echo "<br>$row[name]\n";
-            }
-            echo "</ul></fieldset>";
+            $this->affiche($res, "Prochains anniversaires");
         }
         else {
             echo "<h3>Pas d’anniversaire prochainement</h3>";
@@ -108,7 +108,7 @@ public function liste_birthday() {
 
 public function liste_next_ev() {
     try {
-        $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date, items.name as name, category.name as cname FROM items, category WHERE
+        $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date_f, items.name as datas, category.name as categorie FROM items, category WHERE
         items.category_id!=1 AND
         items.category_id = category.category_id AND 
         (date > date('now') AND date <= DATE('now', '+1 month')) ORDER BY date";
@@ -119,13 +119,7 @@ public function liste_next_ev() {
         
         if ($test['item_id']) {
             $res->reset();
-            echo "<h3>Prochains événements</h3>";
-            echo "<fieldset class=res><ul>";
-            while ($row = $res->fetchArray()) {
-                echo "<li><span class=date>$row[date]</span> - Catégorie : $row[cname]";
-                echo "<br>$row[name]\n";
-            }
-            echo "</ul></fieldset>";
+            $this->affiche($res, "Prochains événements");
         }
         else {
             echo "<h3>Pas d'événement prochainement</h3>";
@@ -152,10 +146,24 @@ public function list_all_cat() {
         echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
     }
 }
+
+public function list_use_cat() {
+    $sql_query = "select DISTINCT a.category_id as ac, a.name as an, b.name as bn from items left join category as a on items.category_id = a.category_id left join category as b on a.parent = b.category_id ORDER BY an ASC";
+    $res=$this->query($sql_query);
+    while ($row = $res->fetchArray()) {
+        echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
+    }
+}
+
 public function new_cat($cat, $sub_cat) {
     $cat = $this->clean($cat);
     $cat = ucfirst(strtolower($cat));
-    $sql_query = "SELECT COUNT(*) AS count from category WHERE name='$cat' AND parent = '$sub_cat'";
+    if ($sub_cat=="NULL") {
+        $sql_query = "SELECT COUNT(*) AS count from category WHERE name='$cat' AND parent IS NULL";
+    }
+    else {
+        $sql_query = "SELECT COUNT(*) AS count from category WHERE name='$cat' AND parent = '$sub_cat'";
+    }
     $this->print_debug ($sql_query);
     $res=$this->query($sql_query);
     $row = $res->fetchArray();
@@ -187,7 +195,21 @@ private function reArrayImages($file_post) {
     return $file_ary;
 }
 
+private function get_mime_type(string $filename)
+{
+    $info = finfo_open(FILEINFO_MIME_TYPE);
+    if (!$info) {
+        return false;
+    }
+
+    $mime_type = finfo_file($info, $filename);
+    finfo_close($info);
+
+    return $mime_type;
+}
+
 public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
+
     $mots = preg_split("/[\s,]+/", $n_desc);
     $tags_array = preg_grep("/^\*/", $mots);
     
@@ -212,23 +234,34 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
         7 => "File upload stopped by extension",
     );
     if (!$haveError) {
-        $n_desc=$n_desc."<div class=files><h5>Fichier :</h5>";
+        $n_desc=$n_desc."<span class=files>Fichier&nbsp;: ";
         foreach ($file_ary as $file) {
             $haveError = $file['error'];
             if (!$haveError) {
                 $tfile=$file['tmp_name'];
                 $nfile=$file['name'];
-                $pfile="users/".$_SESSION[base_name]."/$nfile";
-                if (!file_exists($pfile)) {
-                    $uploaded = move_uploaded_file($tfile, $pfile);
-                    if ($uploaded) {
-                        $n_desc=$n_desc."<a href=\"users/$_SESSION[base_name]/$nfile\" target=\"blank\">$nfile</a> ";
-                        $this->new_log("Fichier $nfile copié", 0);
-                    }
-                }
-                else { 
-                    $this->new_log("Erreur : le fichier $nfile existait ! : Pas d'enregistrement !",1); 
+                $pfile="users/".$_SESSION['base_name']."/$nfile";
+                
+                $mime_type = $this->get_mime_type($tfile);
+                
+                require_once("./config.inc.php");
+                if (!in_array($mime_type, array_keys($_SESSION['ALLOWED_FILES']))) {
+                    $this->new_log("Erreur : Format de fichier $mime_type non autorisé ! : Pas d'enregistrement !",1); 
                     $abort=TRUE;
+                }
+                
+                if (!$abort) {
+                    if (!file_exists($pfile))  {
+                        $uploaded = move_uploaded_file($tfile, $pfile);
+                        if ($uploaded) {
+                            $n_desc=$n_desc."<a href=\"users/$_SESSION[base_name]/$nfile\" target=\"blank\">$nfile</a> ";
+                            $this->new_log("Fichier $nfile copié", 0);
+                        }
+                    }
+                    else { 
+                        $this->new_log("Erreur : le fichier $nfile existait ! : Pas d'enregistrement !",1); 
+                        $abort=TRUE;
+                    }
                 }
             }
             elseif ($haveError != 4) {
@@ -236,7 +269,7 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
                 $abort=TRUE;
             }
         }
-        $n_desc=$n_desc."</div>";
+        $n_desc=$n_desc."</span>";
     }
     elseif ($haveError != 4) {
         $this->new_log("$error_tab[$haveError]", 1);
@@ -337,10 +370,23 @@ public function list_all_tag() {
 }
 
 public function find_by_tag($find_tag,$debut,$fin) {
+    try {
+            $result = $this->querySingle("select name from tags where tag_id = $find_tag", true);
+            $tag_name = $result[name];
+    }
+    catch(Exception $e) {
+        $this->new_log($e->getMessage(), 1);
+    }
+
     date_default_timezone_set('Europe/Paris');
+    if ($debut > $fin) {
+        $a = $debut;
+        $debut = $fin;
+        $fin = $a;
+    }
     $debut=date('Y-m-d',$debut);
     $fin=date('Y-m-d',$fin);
-    $sql_query = "select category.name as cname, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name, tags.name as tags
+    $sql_query = "select category.name as categorie, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name as datas
     FROM items, items_has_tags i, tags, category
     WHERE items.item_id = i.item_id AND i.tag_id = tags.tag_id and items.category_id = category.category_id 
     AND tags.tag_id = $find_tag
@@ -354,25 +400,56 @@ public function find_by_tag($find_tag,$debut,$fin) {
     try {
         $res=$this->query($sql_query);
         if ($res) {
-            echo "<fieldset class=res><ul>";
-            while ($row = $res->fetchArray()) {
-                echo "<li><span class=date>$row[date_f]</span> - Catégorie : $row[cname]";
-                echo "<br>$row[name]\n";
-            }
-            echo "</ul></fieldset>";
+            $this->affiche($res, "Recherche du tag <u>$tag_name</u>");
         }
     }
     catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
     }
 }
-    
+
+private function affiche($result, $titre) {
+//  date_f | categorie | tags | datas 
+// Affiche le titre
+echo "<h3>$titre</h3>\n";
+$a = FALSE;
+if ($result) {
+    echo "<fieldset class=res>\n<ul>\n";
+            while ($row = $result->fetchArray()) {
+                if ($a) { echo "<hr>\n"; }
+                echo "<li>";
+                echo "<span class=date>$row[date_f]</span>";
+                if (isset($row['tags'])) {
+                    echo "<span class=tags><u>Tags :</u> $row[tags]</span>";
+                }
+                if (isset($row['categorie'])) {
+                    echo "<span class=categories><u>Catégorie</u> : $row[categorie]</span>";
+                }
+                echo "<p class='datas'>$row[datas]</p></li>\n";
+                $a = TRUE;
+            }
+            echo "</ul>\n</fieldset>\n";
+        }
+}
+
 public function find_by_cat($find_cat,$debut,$fin) {
+    try {
+            $result = $this->querySingle("select name from category where category_id = $find_cat", true);
+            $cat_name = $result[name];
+    }
+    catch(Exception $e) {
+        $this->new_log($e->getMessage(), 1);
+    }
     date_default_timezone_set('Europe/Paris');
+    if ($debut > $fin) {
+        $a = $debut;
+        $debut = $fin;
+        $fin = $a;
+    }
     $debut=date('Y-m-d',$debut);
     $fin=date('Y-m-d',$fin);
     
-    $sql_query = "SELECT item_id as i, category.name as cname, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name,  items.item_id
+    $sql_query = "SELECT item_id as i, category.name, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name as datas,  items.item_id
         FROM category, items
         WHERE  items.category_id = category.category_id 
         AND (items.category_id=$find_cat 
@@ -385,21 +462,7 @@ public function find_by_cat($find_cat,$debut,$fin) {
     try {
         $res=$this->query($sql_query);
         if ($res) {
-            echo "<fieldset class=res><ul>";
-            while ($row = $res->fetchArray()) {
-                echo "<li><span class=date>$row[date_f]</span>";
-                
-                $sql_query2 = "select name from tags left join items_has_tags  on tags.tag_id = items_has_tags.tag_id where items_has_tags.item_id= $row[i]";
-                $this->print_debug ("<p>$sql_query2</p>");
-                $res2 = $this->query($sql_query2);
-                echo " Étiquettes : ";
-                while ($row2 = $res2->fetchArray()) {
-                    echo "$row2[name] ";
-                }
-                
-                echo "<br>$row[name]</li>\n";
-            }
-            echo "</ul></fieldset>";
+            $this->affiche($res, "Catégorie <u>$cat_name</u>");
         }
     }
     catch(Exception $e) {
@@ -420,10 +483,10 @@ private function clean($data) {
 
 public function new_log($log, $type) {
     if ($type!=0) {
-        $new_log = "<p><span class=red><svg viewBox='0 0 15 15' class='l_icon'><use xlink:href='#bad'/></svg></span><span class=logs> $log</span></p>\n";
+        $new_log = "<p><svg class=img_ta><use xlink:href=\"img/unique.svg#warn\" /></svg><span class=logs> $log</span></p>\n";
     }
     else {
-        $new_log = "<p><span class=green><svg viewBox='0 0 15 15' class='l_icon'><use xlink:href='#good'/></svg></span><span class=logs>$log</span></p>\n";
+        $new_log = "<p><svg class=img_ta><use xlink:href=\"img/unique.svg#ok\" /></svg><span class=logs>$log</span></p>\n";
     }
     $_SESSION['log'] = $_SESSION['log'].$new_log;
 }
