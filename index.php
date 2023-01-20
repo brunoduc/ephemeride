@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width">
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link href="style.css" rel="stylesheet">
-    <title>Sqlite</title>
+    <link href="css/style.css" rel="stylesheet">
+    <title><?php echo TITRE ?></title>
     <script src="htmx/htmx.min.js"></script>
   </head>
   <body id='page'>
@@ -21,8 +21,10 @@
             $passwd = $_POST['passwd'];
             $connected = hash('sha256', $name.$passwd);
             $filename = $base_path.'/users/'.$connected.'/base.sqlite3';
+            $userDir = $base_path.'/users/'.$connected;
             if (file_exists($filename)) {
                 $_SESSION['connected'] = TRUE;
+                $_SESSION['userDir'] = $userDir;
                 $_SESSION['base'] = $filename;
                 $_SESSION['base_name'] = $connected;
                 $_SESSION['user'] = $name;
@@ -39,7 +41,6 @@
                         $_SESSION['base_name'] = $connected;
                         $_SESSION['user'] = $name;
                         $eph->new_log("Utilisateur enregistré", 0);
-                        $_SESSION['log'] = $_SESSION['log']."Welcome !";
                     }
                 }
             }
@@ -49,7 +50,7 @@
         }
 ?>
 <header>
-        <h1>Test sqlite v3</h1>
+        <div id="logo"><svg><use xlink:href="css/icones.svg#logo" /></svg><h1><?php echo TITRE ?></h1></div>
         <?php
         if (isset($_POST['exit']))  {
             $_SESSION['connected'] = FALSE;
@@ -60,11 +61,11 @@
 <nav>
             <form id="nav_form" method="post">
                 <ul id=nav>
-                    <li hx-get="./index.php" hx-target="#page"><svg><use xlink:href="img/unique.svg#home" /></svg><span class=tx>Accueil</span></li>
-                    <li hx-post="htmx/find.php" hx-target="#main"><svg><use xlink:href="img/unique.svg#find" /></svg><span class=tx>Rechercher</span></li>
-                    <li hx-post="htmx/add.php" hx-target="#main"><svg><use xlink:href="img/unique.svg#add" /></svg><span class=tx>Ajouter</span></li>
-                    <li hx-post="htmx/category.php" hx-target="#main"><svg><use xlink:href="img/unique.svg#cat" /></svg><span class=tx>Catégories</span></li>
-                    <li hx-post="" hx-target="#page"><input type="hidden" name=exit value="logout"><svg><use xlink:href="img/unique.svg#exit" /></svg><span class=tx>
+                    <li hx-get="./index.php" hx-target="#page"><svg><use xlink:href="css/icones.svg#home" /></svg><span class=tx>Accueil</span></li>
+                    <li hx-post="htmx/find.php" hx-target="#main"><svg><use xlink:href="css/icones.svg#find" /></svg><span class=tx>Rechercher</span></li>
+                    <li hx-post="htmx/add.php" hx-target="#main"><svg><use xlink:href="css/icones.svg#add" /></svg><span class=tx>Ajouter</span></li>
+                    <li hx-post="htmx/category.php" hx-target="#main"><svg><use xlink:href="css/icones.svg#cat" /></svg><span class=tx>Catégories</span></li>
+                    <li hx-post="" hx-target="#page"><input type="hidden" name=exit value="logout"><svg><use xlink:href="css/icones.svg#exit" /></svg><span class=tx>
 EOF;
 
 echo "$_SESSION[user]";
@@ -113,7 +114,6 @@ EOF;
             }
             else {
                 $eph->print_log();
-                echo "<div class=message>".$_SESSION['log']."</div>";
                 
                 // Recherche d'évenement par catégorie
                 if (!empty($_POST['find_cat']) and ($_POST['find_cat'] != "")) {
@@ -142,7 +142,8 @@ EOF;
         <ul class="footer">
             <?php 
             if (isset($_SESSION['connected'])) { 
-                echo '<li><a title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"><svg><use xlink:href="img/unique.svg#backup" /></svg></a></li>'; 
+                echo '<li><a title="backup du compte" href="htmx/backup.php"><svg><use xlink:href="css/icones.svg#backup" /></svg></a></li>'; 
+                echo '<li><a title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"><svg><use xlink:href="css/icones.svg#base" /></svg></a></li>'; 
             }
             else {
 echo <<<EOF
@@ -152,7 +153,7 @@ echo <<<EOF
                         document.getElementById("lien").style.display="none";
                         document.getElementById("sub").value="Créer l&#39;utilisateur";'
                 title="Ajouter un utilisateur">
-                <svg><use xlink:href="img/unique.svg#user"/></svg>
+                <svg><use xlink:href="css/icones.svg#user"/></svg>
             </li>
 EOF;
 }

@@ -483,10 +483,10 @@ private function clean($data) {
 
 public function new_log($log, $type) {
     if ($type!=0) {
-        $new_log = "<p><svg class=img_ta><use xlink:href=\"img/unique.svg#warn\" /></svg><span class=logs> $log</span></p>\n";
+        $new_log = "<p><svg class=img_ta><use xlink:href=\"css/icones.svg#warn\" /></svg><span class=logs> $log</span></p>\n";
     }
     else {
-        $new_log = "<p><svg class=img_ta><use xlink:href=\"img/unique.svg#ok\" /></svg><span class=logs>$log</span></p>\n";
+        $new_log = "<p><svg class=img_ta><use xlink:href=\"css/icones.svg#ok\" /></svg><span class=logs>$log</span></p>\n";
     }
     $_SESSION['log'] = $_SESSION['log'].$new_log;
 }

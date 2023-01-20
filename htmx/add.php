@@ -46,12 +46,12 @@ echo <<<EOF
                     <svg class="img_ta" onclick='document.getElementById("n_desc").value = document.getElementById("n_desc").value+"*";
                     document.getElementById("n_desc").focus();
                     document.getElementById("n_desc").setSelectionRange(document.getElementById("n_desc").value.length,document.getElementById("n_desc").value.length);
-                    '><use xlink:href="img/unique.svg#tag"/></svg>
+                    '><use xlink:href="css/icones.svg#tag"/></svg>
                     
                     <svg class="img_ta" onclick='document.getElementById("n_desc").value = document.getElementById("n_desc").value+"\\n";
                     document.getElementById("n_desc").focus();
                     document.getElementById("n_desc").setSelectionRange(document.getElementById("n_desc").value.length,document.getElementById("n_desc").value.length);
-                    '><use xlink:href="img/unique.svg#enter"/></svg>
+                    '><use xlink:href="css/icones.svg#enter"/></svg>
                 </li>
                 <li>
                     <textarea id=n_desc name=n_desc rows=5 cols=40 maxlength =25000 wrap=hard></textarea>
