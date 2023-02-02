@@ -1,9 +1,9 @@
 <?php
 // Version d'Éphéméris
-    define('EPH_VERS','0.9.3');
+    define('EPH_VERS','0.9.8');
     
 // Code pour l'ajout d'un utilisateur
-    define('ADD_USER_CODE','1234');
+    define('ADD_USER_CODE','1234GPL');
     
 // Titre
     define('TITRE','Éphéméris');

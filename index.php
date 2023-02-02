@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width">
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
     <title><?php echo TITRE ?></title>
     <script src="htmx/htmx.min.js"></script>
   </head>
@@ -32,7 +32,7 @@
             }
             else {
                 
-                if ((count(scandir($base_path.'/users')) < 3) or ((isset($_POST['cde']) and $_POST['cde']==ADD_USER_CODE))) {
+                if ((count(scandir($base_path.'/users')) < 4) or ((isset($_POST['cde']) and $_POST['cde']==ADD_USER_CODE))) {
                     mkdir("$base_path/users/$connected", 0700);
                     $eph = new ephemeride($filename);
                     if ($eph->init_table()) {
@@ -45,7 +45,8 @@
                 }
             }
         }
-        elseif ($_SESSION['connected']) {
+        
+        elseif (isset($_SESSION['connected']) AND $_SESSION['connected']) {
             $eph = new ephemeride($_SESSION['base']);        
         }
 ?>

@@ -1,3 +1,7 @@
+- v 0.9.8
+Première version utilisable.
+
+
 - Modification de la création d'utilisteur (Icone en bas de page).
 - css
 - add CHANGELOG.md
