@@ -14,7 +14,11 @@
     <?php
         require_once("ephemeride.php");
         $base_path = realpath('.');
-        if (!is_dir("$base_path/users")) { mkdir("$base_path/users",0770); }
+        $nb_users = count(scandir($base_path.'/users')) - 3;
+        if ( ! is_writable(dirname("$base_path/users/."))) {
+            $msg = dirname("$base_path/users/.") . ' must writable!!!';
+        }
+        else {
         
         if (isset($_POST['name']) and isset($_POST['passwd'])) {
             $name = $_POST['name'];
@@ -31,8 +35,7 @@
                 $eph = new ephemeride($filename);
             }
             else {
-                
-                if ((count(scandir($base_path.'/users')) < 4) or ((isset($_POST['cde']) and $_POST['cde']==ADD_USER_CODE))) {
+                if (($nb_users < 1) or ((isset($_POST['cde']) and $_POST['cde']==ADD_USER_CODE))) {
                     mkdir("$base_path/users/$connected", 0700);
                     $eph = new ephemeride($filename);
                     if ($eph->init_table()) {
@@ -49,10 +52,13 @@
         elseif (isset($_SESSION['connected']) AND $_SESSION['connected']) {
             $eph = new ephemeride($_SESSION['base']);        
         }
+        
+        }
 ?>
 <header>
         <div id="logo"><svg><use xlink:href="css/icones.svg#logo" /></svg><h1><?php echo TITRE ?></h1></div>
         <?php
+        if (isset($msg)) { echo "<h2>$msg</h2>"; }
         if (isset($_POST['exit']))  {
             $_SESSION['connected'] = FALSE;
             $_SESSION = array();
@@ -100,7 +106,7 @@ echo <<<EOF
                 <li><input type="text" class="form-control" name="name" placeholder="Nom" autofocus></li>
                 <li><input type="password" class="form-control" name="passwd" placeholder="Mot de passe"></li>
 EOF;
-if (count(scandir($base_path.'/users')) > 2) {
+if ($nb_users > 1) {
 echo <<<EOF
 \n                <li id='cde'><input id='a' type="text" class="form-control" name="cde" placeholder="Code"></li>
 EOF;
@@ -147,6 +153,7 @@ EOF;
                 echo '<li><a title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"><svg><use xlink:href="css/icones.svg#base" /></svg></a></li>'; 
             }
             else {
+                if ($nb_users > 0) {
 echo <<<EOF
 <li style="padding:0px;" id='lien' 
                 onclick='document.getElementById("cde").style.display="flex";
@@ -157,6 +164,7 @@ echo <<<EOF
                 <svg><use xlink:href="css/icones.svg#user"/></svg>
             </li>
 EOF;
+                }
 }
             ?>
             
