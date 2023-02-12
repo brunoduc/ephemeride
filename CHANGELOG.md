@@ -1,3 +1,7 @@
+- v 0.9.9
+Amélioration de la gestion des catégories / sous catégories
+Correction des avertissements de `phpstan analyse -l 5`
+
 - v 0.9.8
 Première version utilisable.
 

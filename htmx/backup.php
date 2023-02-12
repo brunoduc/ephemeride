@@ -28,6 +28,9 @@ BackupMyProject('./path/to/project/yada', true);
 class BackupMyProject{
     // project files working directory - automatically created
     const PWD = "../users/";
+    
+    private $project_path = "";
+    private $backup_file = "";
 
     /**
      * Class construct.

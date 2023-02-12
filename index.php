@@ -84,12 +84,12 @@ echo <<<EOF
         </nav>        
 EOF;
                 // Ajout d'une catégorie
-                if (!empty($_POST['new_cat'])) {
+                if (!empty($_POST['new_cat']) and isset($eph)) {
                     $eph->new_cat($_POST['new_cat'],$_POST['sub_cat']);
                     // $eph->print_log();
                 }
                 // Ajout d'une entrée événement
-                if (!empty($_POST['date']) and !empty($_POST['n_desc'])) {
+                if (!empty($_POST['date']) and !empty($_POST['n_desc']) and isset($eph)) {
                     $eph->new_ev($_POST['date'], $_POST['type'], $_POST['sub_cat'], $_POST['n_desc'], $_FILES['files']);
                     // $eph->print_log();
                 }
@@ -119,7 +119,7 @@ echo <<<EOF
 EOF;
 
             }
-            else {
+            elseif (isset($eph)) {
                 $eph->print_log();
                 
                 // Recherche d'évenement par catégorie

@@ -6,14 +6,7 @@ public $name;
 public $password;
 public $db;
 
-private $log="";
 private $debug=FALSE;
-
-// public $ALLOWED_FILES = [
-//         'image/png' => 'png',
-//         'image/jpeg' => 'jpg',
-//         'application/pdf' => 'pdf'
-//     ];
 
 function __construct(string $db) {
     $_SESSION['log']="";
@@ -148,10 +141,11 @@ public function list_all_cat() {
 }
 
 public function list_use_cat() {
-    $sql_query = "select DISTINCT a.category_id as ac, a.name as an, b.name as bn from items left join category as a on items.category_id = a.category_id left join category as b on a.parent = b.category_id ORDER BY an ASC";
+    $sql_query = "select DISTINCT a.category_id as ac, a.name as an, b.name as bn from items left join category as a on items.category_id = a.category_id left join category as b on a.parent = b.category_id ORDER BY ac, an ASC";
     $res=$this->query($sql_query);
     while ($row = $res->fetchArray()) {
-        echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
+        if (!empty($row[bn])) {$row[bn] = $row[bn].' -->'; } 
+        echo "<option value='$row[ac]'>$row[bn] $row[an]</option>\n";
     }
 }
 
@@ -233,6 +227,9 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
         6 => "Impossible d'écrire le fichier sur le disque",
         7 => "File upload stopped by extension",
     );
+    
+    $abort=FALSE;
+    
     if (!$haveError) {
         $n_desc=$n_desc."<span class=files>Fichier&nbsp;: ";
         foreach ($file_ary as $file) {
@@ -243,7 +240,7 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
                 $pfile="users/".$_SESSION['base_name']."/$nfile";
                 
                 $mime_type = $this->get_mime_type($tfile);
-                
+                                
                 require_once("./config.inc.php");
                 if (!in_array($mime_type, array_keys($_SESSION['ALLOWED_FILES']))) {
                     $this->new_log("Erreur : Format de fichier $mime_type non autorisé ! : Pas d'enregistrement !",1); 
@@ -274,9 +271,7 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
     elseif ($haveError != 4) {
         $this->new_log("$error_tab[$haveError]", 1);
     }
-    
-    if (isset($message)) { $this->new_log("$message", 1); }
-    
+        
     if (!$abort) {
         $this->enableExceptions(true);
         $n_desc = str_replace("'", "&apos;", $n_desc);
@@ -370,9 +365,10 @@ public function list_all_tag() {
 }
 
 public function find_by_tag($find_tag,$debut,$fin) {
+    $tag_name="";
     try {
             $result = $this->querySingle("select name from tags where tag_id = $find_tag", true);
-            $tag_name = $result[name];
+            $tag_name = $result['name'];
     }
     catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
@@ -433,13 +429,18 @@ if ($result) {
 }
 
 public function find_by_cat($find_cat,$debut,$fin) {
+    $cat_name = "";
     try {
-            $result = $this->querySingle("select name from category where category_id = $find_cat", true);
-            $cat_name = $result[name];
+            $result = $this->querySingle("select b.name as bn, a.name as an from category as a left join category as b on a.parent = b.category_id where a.category_id = $find_cat order by bn", true);
+            if ($result['bn'] != "") { 
+                $cat_name = $result['bn']." --> "; 
+            }
+            $cat_name = $cat_name.$result['an'];
     }
     catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
     }
+    
     date_default_timezone_set('Europe/Paris');
     if ($debut > $fin) {
         $a = $debut;
