@@ -1,5 +1,5 @@
 # ephemeride
-<u>**Version 0.9.8**</u>
+<u>**Version 0.9.9**</u>
 
 Les calendriers existent pour ne pas oubliez les événements futurs.
 
@@ -52,7 +52,7 @@ Notez ce que vous voulez. Attention, il n'est pas prévu d'effacer ou de modifie
 
 Au cas où vous souhaitez malgré tout faire des modifications, vous pouvez ouvrir le fichier de la base sqlite après un avoir fait une sauvegarde.
 
-##Sauvegarde et transfert##
+## Sauvegarde et transfert
 Vous pouvez récupérer votre base sqlite ou votre compte entier (avec les fichiers uploadés). Attention, toutes les données sont en claires.
 
 Pour restaurer une sauvegarde, il suffit de décompresser
