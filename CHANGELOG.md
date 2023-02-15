@@ -1,3 +1,6 @@
+- v 1.0.0
+Posibilité de ré-uploader la bas et/ou des fichiers. Attention : écrasement de l'ancienne version !
+
 - v 0.9.9
 Amélioration de la gestion des catégories / sous catégories
 Correction des avertissements de `phpstan analyse -l 5`

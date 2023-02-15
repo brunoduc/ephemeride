@@ -1,5 +1,5 @@
 # ephemeride
-<u>**Version 0.9.9**</u>
+<u>**Version 1.0.0**</u>
 
 Les calendriers existent pour ne pas oubliez les événements futurs.
 
@@ -53,10 +53,12 @@ Notez ce que vous voulez. Attention, il n'est pas prévu d'effacer ou de modifie
 Au cas où vous souhaitez malgré tout faire des modifications, vous pouvez ouvrir le fichier de la base sqlite après un avoir fait une sauvegarde.
 
 ## Sauvegarde et transfert
+**Toutes les données d'un utilisateur sont dans son dossier** `users/xxxxxxxxxxxxxx`.
+
 Vous pouvez récupérer votre base sqlite ou votre compte entier (avec les fichiers uploadés). Attention, toutes les données sont en claires.
 
-Pour restaurer une sauvegarde, il suffit de décompresser
-l'archive dans le dossier **users**.
+Pour restaurer une sauvegarde, vous pouvez ré-uploader une sauvegarde de la base et/ou des fichiers.<br>
+Vous pouvez aussi recopier directement dans le dossier `users/xxxxxxxxxxxxxx`. 
 
 ## Mot de passe
 Les informations login/mot de passe sont dans le nom du répertoire (sous la forme : fcac5aa5fde14524eb61afd4db898f7670bb382c67639fccf9155854e2713109).

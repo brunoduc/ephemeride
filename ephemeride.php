@@ -144,7 +144,7 @@ public function list_use_cat() {
     $sql_query = "select DISTINCT a.category_id as ac, a.name as an, b.name as bn from items left join category as a on items.category_id = a.category_id left join category as b on a.parent = b.category_id ORDER BY ac, an ASC";
     $res=$this->query($sql_query);
     while ($row = $res->fetchArray()) {
-        if (!empty($row[bn])) {$row[bn] = $row[bn].' -->'; } 
+        if (!empty($row['bn'])) {$row['bn'] = $row['bn'].' -->'; } 
         echo "<option value='$row[ac]'>$row[bn] $row[an]</option>\n";
     }
 }
@@ -469,6 +469,35 @@ public function find_by_cat($find_cat,$debut,$fin) {
     catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
     }
+}
+
+public function restore($files) {
+    $file_ary = $this->reArrayImages($files);
+    
+    require_once("./config.inc.php");
+    
+    foreach ($file_ary as $file) {
+        $haveError = $file['error'];
+        if (!$haveError) {
+            $tfile=$file['tmp_name'];
+            $nfile=$file['name'];
+            $pfile="users/".$_SESSION['base_name']."/$nfile";
+            
+            $mime_type = $this->get_mime_type($tfile);
+            
+            if (!in_array($mime_type, array_keys($_SESSION['ALLOWED_FILES'])) and $mime_type != "application/x-sqlite3") {
+                $this->new_log("Erreur : Format de fichier $mime_type non autorisé ! : Pas d'enregistrement !",1); 
+                $abort=TRUE;
+            }
+            else {
+                $uploaded = move_uploaded_file($tfile, $pfile);
+                if ($uploaded) {
+                    $this->new_log("Fichier $nfile de type $mime_type copié", 0);
+                }
+            }
+        }
+    }
+
 }
     
 private function clean($data) {

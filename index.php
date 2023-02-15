@@ -93,6 +93,12 @@ EOF;
                     $eph->new_ev($_POST['date'], $_POST['type'], $_POST['sub_cat'], $_POST['n_desc'], $_FILES['files']);
                     // $eph->print_log();
                 }
+                // Restauration de fichiers
+                
+                if (isset($_FILES['restore']) and isset($eph)) {
+                    $eph->restore($_FILES['restore']);
+                }
+                
             }
         ?>       
     </header>
@@ -105,6 +111,7 @@ echo <<<EOF
             <ul class='mono-col'>
                 <li><input type="text" class="form-control" name="name" placeholder="Nom" autofocus></li>
                 <li><input type="password" class="form-control" name="passwd" placeholder="Mot de passe"></li>
+                
 EOF;
 if ($nb_users > 1) {
 echo <<<EOF
@@ -151,6 +158,7 @@ EOF;
             if (isset($_SESSION['connected'])) { 
                 echo '<li><a title="backup du compte" href="htmx/backup.php"><svg><use xlink:href="css/icones.svg#backup" /></svg></a></li>'; 
                 echo '<li><a title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"><svg><use xlink:href="css/icones.svg#base" /></svg></a></li>'; 
+                echo '<li hx-post="htmx/restore.php" hx-target="#main" title="Restaurer"><svg><use xlink:href="css/icones.svg#restore" /></svg></li>';
             }
             else {
                 if ($nb_users > 0) {
