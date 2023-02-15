@@ -68,10 +68,10 @@
 <nav>
             <form id="nav_form" method="post">
                 <ul id=nav>
-                    <li hx-get="./index.php" hx-target="#page"><svg><use xlink:href="css/icones.svg#home" /></svg><span class=tx>Accueil</span></li>
-                    <li hx-post="htmx/find.php" hx-target="#main"><svg><use xlink:href="css/icones.svg#find" /></svg><span class=tx>Rechercher</span></li>
-                    <li hx-post="htmx/add.php" hx-target="#main"><svg><use xlink:href="css/icones.svg#add" /></svg><span class=tx>Ajouter</span></li>
-                    <li hx-post="htmx/category.php" hx-target="#main"><svg><use xlink:href="css/icones.svg#cat" /></svg><span class=tx>Catégories</span></li>
+                    <li hx-get="./index.php" hx-target="#page" hx-push-url="./"><svg><use xlink:href="css/icones.svg#home" /></svg><span class=tx>Accueil</span></li>
+                    <li hx-post="htmx/find.php" hx-target="#main" hx-push-url="./"><svg><use xlink:href="css/icones.svg#find" /></svg><span class=tx>Rechercher</span></li>
+                    <li hx-post="htmx/add.php" hx-target="#main" hx-push-url="./"><svg><use xlink:href="css/icones.svg#add" /></svg><span class=tx>Ajouter</span></li>
+                    <li hx-post="htmx/category.php" hx-target="#main" hx-push-url="./"><svg><use xlink:href="css/icones.svg#cat" /></svg><span class=tx>Catégories</span></li>
                     <li hx-post="" hx-target="#page"><input type="hidden" name=exit value="logout"><svg><use xlink:href="css/icones.svg#exit" /></svg><span class=tx>
 EOF;
 
