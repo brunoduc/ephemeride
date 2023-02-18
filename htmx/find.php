@@ -66,10 +66,10 @@ function convertTimestamp(timestamp) {
         <ol>
             <li><label for=find_cat>Catégorie</label>
                 <select name=find_cat id=find_cat onchange="document.forms.find_form.submit();">
+                    <option selected> </option>\n
 EOF;
 $eph->list_use_cat();
 echo <<<EOF
-                    <option selected> </option>
                 </select>
             </li>
         </ol>
@@ -79,10 +79,10 @@ echo <<<EOF
         <ol>
             <li><label for=find_tag>Étiquette</label>
                 <select name=find_tag id=find_tag onchange="document.forms.find_form.submit();">
+                    <option selected> </option>\n
 EOF;
 $eph->list_all_tag();
 echo <<<EOF
-                    <option selected> </option>
                 </select>
             </li>
             

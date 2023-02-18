@@ -141,11 +141,18 @@ public function list_all_cat() {
 }
 
 public function list_use_cat() {
-    $sql_query = "select DISTINCT a.category_id as ac, a.name as an, b.name as bn from items left join category as a on items.category_id = a.category_id left join category as b on a.parent = b.category_id ORDER BY ac, an ASC";
+    $sql_query = "select DISTINCT a.category_id as ac, a.name as an, b.name as bn from items left join category as a on items.category_id = a.category_id left join category as b on a.parent = b.category_id";
     $res=$this->query($sql_query);
+    $liste = array();
     while ($row = $res->fetchArray()) {
-        if (!empty($row['bn'])) {$row['bn'] = $row['bn'].' -->'; } 
-        echo "<option value='$row[ac]'>$row[bn] $row[an]</option>\n";
+        if (!empty($row['bn'])) {$row['bn'] = $row['bn'].' --> '; } 
+        $index = $row['ac'];
+        $value = $row['bn'].$row['an'];
+        $liste[$index] = "$value";
+    }
+    asort($liste);
+    foreach ($liste as $key => $val) {
+        echo "                    <option value='$key'>$val</option>\n";
     }
 }
 
@@ -356,7 +363,7 @@ public function list_all_tag() {
         $sql_query = "SELECT * FROM tags ORDER BY name ASC ";
         $res=$this->query($sql_query);
         while ($row = $res->fetchArray()) {
-            echo "<option value='$row[tag_id]'>$row[name]</option>\n";
+            echo "                    <option value='$row[tag_id]'>$row[name]</option>\n";
         }
     }
     catch(Exception $e) {

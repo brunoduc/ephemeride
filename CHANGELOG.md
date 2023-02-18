@@ -1,3 +1,9 @@
+- V 1.1.1
+Amélioration de la recherche par catégorie (Ordre alphabétique).
+
+- v 1.1.0
+Réinitialiation de l'URL à index.php sans les données POST et GET.
+
 - v 1.0.0
 Posibilité de ré-uploader la bas et/ou des fichiers. Attention : écrasement de l'ancienne version !
 
