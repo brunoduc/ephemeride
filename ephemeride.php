@@ -298,6 +298,7 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
                     foreach ($tags_array as $tag) {
                         $tag = strtolower(ltrim($tag, "*"));
                         $tag = $this->clean($tag);
+                        $tag = rtrim($tag, ';,.!? ');
                         $sql_query = "SELECT tag_id,name FROM tags WHERE name='$tag'";
                         $this->print_debug ($sql_query);
                         $res = $this->query($sql_query);
