@@ -498,6 +498,10 @@ public function restore($files) {
                 $abort=TRUE;
             }
             else {
+                if ($nfile == "base.sqlite3") {
+                    $date =  date("Y-m-d H:i:s");
+                    rename($pfile, $pfile." ".$date." ~");
+                }
                 $uploaded = move_uploaded_file($tfile, $pfile);
                 if ($uploaded) {
                     $this->new_log("Fichier $nfile de type $mime_type copié", 0);

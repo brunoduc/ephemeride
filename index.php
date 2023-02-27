@@ -158,7 +158,7 @@ EOF;
             if (isset($_SESSION['connected'])) { 
                 echo '<li><a title="backup du compte" href="htmx/backup.php"><svg><use xlink:href="css/icones.svg#backup" /></svg></a></li>'; 
                 echo '<li><a title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"><svg><use xlink:href="css/icones.svg#base" /></svg></a></li>'; 
-                echo '<li hx-post="htmx/restore.php" hx-target="#main" title="Restaurer"><svg><use xlink:href="css/icones.svg#restore" /></svg></li>';
+                echo '<li hx-post="htmx/restore.php" hx-target="#main" title="Restaurer"><svg><use xlink:href="css/icones.svg#restbase" /></svg></li>';
             }
             else {
                 if ($nb_users > 0) {
