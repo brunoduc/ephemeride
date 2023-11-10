@@ -113,7 +113,7 @@ echo <<<EOF
                 <li><input type="password" class="form-control" name="passwd" placeholder="Mot de passe"></li>
                 
 EOF;
-if ($nb_users > 1) {
+if ($nb_users > 0) {
 echo <<<EOF
 \n                <li id='cde'><input id='a' type="text" class="form-control" name="cde" placeholder="Code"></li>
 EOF;
