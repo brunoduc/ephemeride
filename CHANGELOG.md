@@ -5,7 +5,7 @@ Amélioration de la recherche par catégorie (Ordre alphabétique).
 Réinitialiation de l'URL à index.php sans les données POST et GET.
 
 - v 1.0.0
-Posibilité de ré-uploader la bas et/ou des fichiers. Attention : écrasement de l'ancienne version !
+Posibilité de ré-uploader la base et/ou des fichiers. Attention : écrasement de l'ancienne version !
 
 - v 0.9.9
 Amélioration de la gestion des catégories / sous catégories
