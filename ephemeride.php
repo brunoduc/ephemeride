@@ -191,6 +191,9 @@ public function new_cat(string $cat, string $sub_cat) :void {
     }
 }
 
+/**
+ * @param array<string> $file_post
+ */
 private function reArrayImages(array $file_post) :array {
     $file_ary = [];
     $file_keys = array_keys($file_post);
@@ -205,16 +208,20 @@ private function reArrayImages(array $file_post) :array {
     return $file_ary;
 }
 
-private function get_mime_type(string $filename) :mixed
+private function get_mime_type(string $filename) :string
 {
     $info = finfo_open(FILEINFO_MIME_TYPE);
     if (!$info) {
-        return false;
+        return "unknow";
     }
-    $mime_type = finfo_file($info, $filename);
-    finfo_close($info);
-
-    return $mime_type;
+    if ($mime_type = finfo_file($info, $filename)) {
+        finfo_close($info);
+    }
+    else {
+        $mime_type ="unknow";
+    }
+        return $mime_type;
+        
 }
 /**
  * @param array<string> $files
@@ -222,6 +229,7 @@ private function get_mime_type(string $filename) :mixed
 public function new_ev(string $date, string $cat, string $sub_cat, string $n_desc, array $files) :void {
 
     $mots[] = preg_split("/[\s,]+/", $n_desc);
+    $tags_array = array();
     $tags_array = preg_grep("/^\*/", $mots);
     
     $n_desc = str_replace("*", "", "$n_desc");
@@ -305,20 +313,22 @@ public function new_ev(string $date, string $cat, string $sub_cat, string $n_des
                     $id_item = $this->lastInsertRowID();
                     $this->new_log("Création de l'événement réussie", 0);
                     $id_tag_array = array();
+                 if ($tags_array) {
                     foreach ($tags_array as $tag) {
                         $tag = strtolower(ltrim($tag, "*"));
                         $tag = $this->clean($tag);
                         $tag = rtrim($tag, ';,.!? ');
                         $sql_query = "SELECT tag_id,name FROM tags WHERE name='$tag'";
                         $this->print_debug ($sql_query);
-                        $res = $this->query($sql_query);
-                        
-                        for ( $nb_res = 0; $res->fetchArray(); ++$nb_res );
-                        $this->print_debug ("nb_res = $nb_res");
-                        $this->print_debug ("tag = $tag");
-                        if ($nb_res) {
-                            $row = $res->fetchArray();
-                            $id_tag_array['$tag'] = intval($row[0]);
+                        $nb_res = FALSE;
+                        if ($res = $this->query($sql_query)) {
+                            for ( $nb_res = 0; $res->fetchArray(); ++$nb_res );
+                            $this->print_debug ("nb_res = $nb_res");
+                            $this->print_debug ("tag = $tag");
+                            if ($nb_res) {
+                                $row = $res->fetchArray();
+                                $id_tag_array['$tag'] = intval($row[0]);
+                            }
                         }
                         else { 
                             $sql_query = "INSERT INTO tags (name) VALUES ('$tag')";
@@ -327,7 +337,8 @@ public function new_ev(string $date, string $cat, string $sub_cat, string $n_des
                             $this->new_log("Création de l'étiquette $tag réussie", 0);
                             $this->print_debug ("On crée l'étiquette $tag");
                         }
-                    }   
+                    }
+                }
                     foreach ($id_tag_array as $id_tag) {
                         $sql_query = "INSERT INTO items_has_tags (item_id, tag_id) VALUES ($id_item, $id_tag)";
                         $this->print_debug ("On affecte $id_tag à $id_item");
@@ -376,9 +387,10 @@ public function minmax() :mixed {
 public function list_all_tag() :void {
     try {
         $sql_query = "SELECT * FROM tags ORDER BY name ASC ";
-        $res=$this->query($sql_query);
-        while ($row = $res->fetchArray()) {
-            echo "                    <option value='$row[tag_id]'>$row[name]</option>\n";
+        if ($res=$this->query($sql_query)) {
+            while ($row = $res->fetchArray()) {
+                echo "                    <option value='$row[tag_id]'>$row[name]</option>\n";
+            }
         }
     }
     catch(Exception $e) {
@@ -386,11 +398,13 @@ public function list_all_tag() :void {
     }
 }
 
-public function find_by_tag(int $find_tag, int|bool $debut, int|bool $fin) :void {
+public function find_by_tag(int $find_tag, int $debut, int $fin) :void {
     $tag_name="";
     try {
-            $result = $this->querySingle("select name from tags where tag_id = $find_tag", true);
+        $result = $this->querySingle("select name from tags where tag_id = $find_tag", true);
+        if (is_array($result)) {
             $tag_name = $result['name'];
+        }
     }
     catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
@@ -426,12 +440,11 @@ public function find_by_tag(int $find_tag, int|bool $debut, int|bool $fin) :void
     }
 }
 
-private function affiche(SQLite3Result|bool $result, string $titre) :void {
+private function affiche(SQLite3Result $result, string $titre) :void {
 //  date_f | categorie | tags | datas 
 // Affiche le titre
 echo "<h3>$titre</h3>\n";
 $a = FALSE;
-if ($result) {
     echo "<fieldset class=res>\n<ul>\n";
             while ($row = $result->fetchArray()) {
                 if ($a) { echo "<hr>\n"; }
@@ -447,17 +460,18 @@ if ($result) {
                 $a = TRUE;
             }
             echo "</ul>\n</fieldset>\n";
-        }
 }
 
-public function find_by_cat(int $find_cat, int|bool $debut, int|bool $fin) :void {
+public function find_by_cat(int $find_cat, int $debut, int $fin) :void {
     $cat_name = "";
     try {
-            $result = $this->querySingle("select b.name as bn, a.name as an from category as a left join category as b on a.parent = b.category_id where a.category_id = $find_cat order by bn", true);
+        $result = $this->querySingle("select b.name as bn, a.name as an from category as a left join category as b on a.parent = b.category_id where a.category_id = $find_cat order by bn", true);
+        if (is_array($result)) {
             if ($result['bn'] != "") { 
                 $cat_name = $result['bn']." --> "; 
             }
             $cat_name = $cat_name.$result['an'];
+        }
     }
     catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
