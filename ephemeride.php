@@ -1,12 +1,12 @@
 <?php
 class ephemeride extends SQLite3 {
 
-public $connected;
-public $name;
-public $password;
-public $db;
+public bool $connected ;
+public string $name;
+public string $password;
+public string $db;
 
-private $debug=FALSE;
+private bool $debug=FALSE;
 
 function __construct(string $db) {
     $_SESSION['log']="";
@@ -21,11 +21,11 @@ function __construct(string $db) {
      }
 }
 
-private function print_debug(string $message) {
+private function print_debug(string $message) :void {
     if ($this->debug) { echo "<br>$message"; }
 }
 
-public function init_table() {
+public function init_table() :bool {
     $res = TRUE;
     $commands = ['
     CREATE TABLE IF NOT EXISTS tags (
@@ -72,7 +72,7 @@ public function init_table() {
         return $res;
     }
 
-public function liste_birthday() {
+public function liste_birthday() :void {
     try {
         $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date_f, name as datas FROM items WHERE 
         (category_id=1) AND (
@@ -82,16 +82,18 @@ public function liste_birthday() {
         (strftime('%m', `date`)=strftime('%m', 'now','+1 month'))
         ))";
         $this->print_debug ($sql_query);
-        $res=$this->query($sql_query);
+        if ($res=$this->query($sql_query)) {
         
-        $test=$res->fetchArray();
-        
-        if ($test['item_id']) {
-            $res->reset();
-            $this->affiche($res, "Prochains anniversaires");
-        }
-        else {
-            echo "<h3>Pas d’anniversaire prochainement</h3>";
+                if ($test=$res->fetchArray()) { 
+            
+                if ($test['item_id']) {
+                    $res->reset();
+                    $this->affiche($res, "Prochains anniversaires");
+                }
+                else {
+                    echo "<h3>Pas d’anniversaire prochainement</h3>";
+                }
+            }
         }
     }
     catch(Exception $e) {
@@ -99,23 +101,23 @@ public function liste_birthday() {
     }
 }
 
-public function liste_next_ev() {
+public function liste_next_ev() :void {
     try {
         $sql_query = "SELECT item_id, strftime('%d %m %Y', date) as date_f, items.name as datas, category.name as categorie FROM items, category WHERE
         items.category_id!=1 AND
         items.category_id = category.category_id AND 
         (date > date('now') AND date <= DATE('now', '+1 month')) ORDER BY date";
         $this->print_debug ($sql_query);
-        $res=$this->query($sql_query);
-        
-        $test=$res->fetchArray();
-        
-        if ($test['item_id']) {
-            $res->reset();
-            $this->affiche($res, "Prochains événements");
-        }
-        else {
-            echo "<h3>Pas d'événement prochainement</h3>";
+        if ($res=$this->query($sql_query)) {
+            if ($test=$res->fetchArray()) {
+                if ($test['item_id']) {
+                    $res->reset();
+                    $this->affiche($res, "Prochains événements");
+                }
+                else {
+                    echo "<h3>Pas d'événement prochainement</h3>";
+                }
+            }
         }
     }
     catch(Exception $e) {
@@ -123,40 +125,43 @@ public function liste_next_ev() {
     }
 }
 
-public function liste_cat($type) {
+public function liste_cat(int $type) :void {
     echo "IN fonction";
         if ($type) { $sql_query = "SELECT * FROM category WHERE parent = $type ORDER BY name ASC "; }
         else       { $sql_query = "SELECT * FROM category WHERE parent IS NULL ORDER BY name ASC "; }
-        $res = $this->query($sql_query);
-        while ($row = $res->fetchArray()) {
-            echo "<option value='$row[category_id]'>$row[name]</option>\n";
+        if ($res = $this->query($sql_query)) {
+            while ($row = $res->fetchArray()) {
+                echo "<option value='$row[category_id]'>$row[name]</option>\n";
+            }
         }
     }
-public function list_all_cat() {
+public function list_all_cat() :void {
     $sql_query = "select a.category_id as ac, a.name as an, b.name as bn from category as a left join category as b on a.parent = b.category_id ORDER BY an ASC";
-    $res=$this->query($sql_query);
-    while ($row = $res->fetchArray()) {
-        echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
+    if ($res=$this->query($sql_query)) {
+        while ($row = $res->fetchArray()) {
+            echo "<option value='$row[ac]'>$row[an] $row[bn]</option>\n";
+        }
     }
 }
 
-public function list_use_cat() {
+public function list_use_cat() :void {
     $sql_query = "select DISTINCT a.category_id as ac, a.name as an, b.name as bn from items left join category as a on items.category_id = a.category_id left join category as b on a.parent = b.category_id";
-    $res=$this->query($sql_query);
-    $liste = array();
-    while ($row = $res->fetchArray()) {
-        if (!empty($row['bn'])) {$row['bn'] = $row['bn'].' --> '; } 
-        $index = $row['ac'];
-        $value = $row['bn'].$row['an'];
-        $liste[$index] = "$value";
-    }
-    asort($liste);
-    foreach ($liste as $key => $val) {
-        echo "                    <option value='$key'>$val</option>\n";
+    if ($res=$this->query($sql_query)) {
+        $liste = array();
+        while ($row = $res->fetchArray()) {
+            if (!empty($row['bn'])) {$row['bn'] = $row['bn'].' --> '; } 
+            $index = $row['ac'];
+            $value = $row['bn'].$row['an'];
+            $liste[$index] = "$value";
+        }
+        asort($liste);
+        foreach ($liste as $key => $val) {
+            echo "                    <option value='$key'>$val</option>\n";
+        }
     }
 }
 
-public function new_cat($cat, $sub_cat) {
+public function new_cat(string $cat, string $sub_cat) :void {
     $cat = $this->clean($cat);
     $cat = ucfirst(strtolower($cat));
     if ($sub_cat=="NULL") {
@@ -166,26 +171,27 @@ public function new_cat($cat, $sub_cat) {
         $sql_query = "SELECT COUNT(*) AS count from category WHERE name='$cat' AND parent = '$sub_cat'";
     }
     $this->print_debug ($sql_query);
-    $res=$this->query($sql_query);
-    $row = $res->fetchArray();
-    
-    if ($row['count']) {
-        $this->new_log("Le couple catégorie/sous catégorie existe déjà !", 1);
-    }
-    else {
-        $sql_query = "INSERT INTO `category` (`name`, `parent`) VALUES ('$cat', $sub_cat)";
-        $this->print_debug ($sql_query);
-        try {
-            $res=$this->query($sql_query);
-            $this->new_log("Création de la catégorie $cat réussie", 0);
-        }
-        catch(Exception $e) {
-            $this->new_log($e->getMessage(), 1);
+    if ($res=$this->query($sql_query)) {
+        if ($row = $res->fetchArray()) {
+            if ($row['count']) {
+                $this->new_log("Le couple catégorie/sous catégorie existe déjà !", 1);
+            }
+            else {
+                $sql_query = "INSERT INTO `category` (`name`, `parent`) VALUES ('$cat', $sub_cat)";
+                $this->print_debug ($sql_query);
+                try {
+                    $res=$this->query($sql_query);
+                    $this->new_log("Création de la catégorie $cat réussie", 0);
+                }
+                catch(Exception $e) {
+                    $this->new_log($e->getMessage(), 1);
+                }
+            }
         }
     }
 }
 
-private function reArrayImages($file_post) {
+private function reArrayImages(array $file_post) :array {
     $file_ary = [];
     $file_keys = array_keys($file_post);
     foreach ($file_post as $key => $value) {
@@ -193,25 +199,29 @@ private function reArrayImages($file_post) {
             $file_ary[$key2][$key] = $value2;
         }
     }
+    /**
+    * @param array<array> $file_ary
+    */
     return $file_ary;
 }
 
-private function get_mime_type(string $filename)
+private function get_mime_type(string $filename) :mixed
 {
     $info = finfo_open(FILEINFO_MIME_TYPE);
     if (!$info) {
         return false;
     }
-
     $mime_type = finfo_file($info, $filename);
     finfo_close($info);
 
     return $mime_type;
 }
+/**
+ * @param array<string> $files
+ */
+public function new_ev(string $date, string $cat, string $sub_cat, string $n_desc, array $files) :void {
 
-public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
-
-    $mots = preg_split("/[\s,]+/", $n_desc);
+    $mots[] = preg_split("/[\s,]+/", $n_desc);
     $tags_array = preg_grep("/^\*/", $mots);
     
     $n_desc = str_replace("*", "", "$n_desc");
@@ -285,8 +295,8 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
         $sql_query = "SELECT COUNT(*) as count FROM items WHERE name= '$n_desc' AND category_id = $cat AND date = '$date'";
         $this->print_debug ($sql_query);
         try { // pour vérifier qu'il n'y aura pas de doublon
-            $res=$this->query($sql_query);
-            $row = $res->fetchArray();
+            if ($res=$this->query($sql_query)) {
+            if ($row = $res->fetchArray()) {
             if ($row['count'] == 0) { // pas de doublon !
                 $sql_query = "INSERT INTO items (name, category_id, date) VALUES ('$n_desc', '$cat', '$date')";
                 $this->print_debug ($sql_query);
@@ -303,7 +313,7 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
                         $this->print_debug ($sql_query);
                         $res = $this->query($sql_query);
                         
-                        for ( $nb_res = 0; is_array($res->fetchArray()); ++$nb_res );
+                        for ( $nb_res = 0; $res->fetchArray(); ++$nb_res );
                         $this->print_debug ("nb_res = $nb_res");
                         $this->print_debug ("tag = $tag");
                         if ($nb_res) {
@@ -335,19 +345,22 @@ public function new_ev($date, $cat, $sub_cat, $n_desc, $files) {
                 }
             }
         }
+        }
+        }
         catch(Exception $e) {
             $this->new_log("$sql_query c ".$e->getMessage(), 1);
         }
     }
 }
 
-public function minmax() {
+public function minmax() :mixed {
     try {
         $query = "SELECT strftime('%s',min(date)) min, strftime('%s',max(date)) max, min(date) min_d, max(date) max_d from items";
         $res = $this->query($query);
         if($res==FALSE)
         {
             echo "Error in fetch ".$this->lastErrorMsg();
+            return FALSE;
         }
         else {
             return $res->fetchArray();
@@ -356,10 +369,11 @@ public function minmax() {
     catch(Exception $e) {
         $this->new_log($e->getMessage(), 1);
         $this->print_log();
+        return FALSE;
     }
 }
 
-public function list_all_tag() {
+public function list_all_tag() :void {
     try {
         $sql_query = "SELECT * FROM tags ORDER BY name ASC ";
         $res=$this->query($sql_query);
@@ -372,7 +386,7 @@ public function list_all_tag() {
     }
 }
 
-public function find_by_tag($find_tag,$debut,$fin) {
+public function find_by_tag(int $find_tag, int|bool $debut, int|bool $fin) :void {
     $tag_name="";
     try {
             $result = $this->querySingle("select name from tags where tag_id = $find_tag", true);
@@ -412,7 +426,7 @@ public function find_by_tag($find_tag,$debut,$fin) {
     }
 }
 
-private function affiche($result, $titre) {
+private function affiche(SQLite3Result|bool $result, string $titre) :void {
 //  date_f | categorie | tags | datas 
 // Affiche le titre
 echo "<h3>$titre</h3>\n";
@@ -436,7 +450,7 @@ if ($result) {
         }
 }
 
-public function find_by_cat($find_cat,$debut,$fin) {
+public function find_by_cat(int $find_cat, int|bool $debut, int|bool $fin) :void {
     $cat_name = "";
     try {
             $result = $this->querySingle("select b.name as bn, a.name as an from category as a left join category as b on a.parent = b.category_id where a.category_id = $find_cat order by bn", true);
@@ -479,7 +493,10 @@ public function find_by_cat($find_cat,$debut,$fin) {
     }
 }
 
-public function restore($files) {
+/**
+ * @param array<string> $files
+ */
+public function restore(array $files) :void {
     $file_ary = $this->reArrayImages($files);
     
     require_once("./config.inc.php");
@@ -512,7 +529,7 @@ public function restore($files) {
 
 }
     
-private function clean($data) {
+private function clean(string $data) :string {
     $data = trim($data);
     $data = str_replace("'", "&apos;", $data);
     $data = nl2br($data);
@@ -523,7 +540,7 @@ private function clean($data) {
 
 // Gestion des logs
 
-public function new_log($log, $type) {
+public function new_log(string $log, int $type) :void {
     if ($type!=0) {
         $new_log = "<p><svg class=img_ta><use xlink:href=\"css/icones.svg#warn\" /></svg><span class=logs> $log</span></p>\n";
     }
@@ -533,12 +550,12 @@ public function new_log($log, $type) {
     $_SESSION['log'] = $_SESSION['log'].$new_log;
 }
     
-public function aff_log($log, $type) {
+public function aff_log(string $log, int $type) :void {
     $this->new_log($log, $type);
     $this->print_log();
 }
     
-public function print_log() {
+public function print_log() : void {
     if (isset($_SESSION['log'])) {
         if ($_SESSION['log']!="") {
             echo "<h3>Messages</h3>";
@@ -548,7 +565,7 @@ public function print_log() {
     }
 }
     
-public function clean_log() {
+public function clean_log() : void {
     $_SESSION['log']!="";
 }
 

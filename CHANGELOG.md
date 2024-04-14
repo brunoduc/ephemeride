@@ -1,3 +1,8 @@
+- V 1.2.9
+Typage des variables et des fonction
+root@omega:/var/www/html# php vendor/bin/phpstan analyse --level 9 ephemeride/config.inc.php ephemeride/index.php ephemeride/ephemeride.php 
+20 errors
+
 - V 1.1.1
 Amélioration de la recherche par catégorie (Ordre alphabétique).
 
