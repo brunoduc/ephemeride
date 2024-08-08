@@ -83,16 +83,14 @@ public function liste_birthday() :void {
         ))";
         $this->print_debug ($sql_query);
         if ($res=$this->query($sql_query)) {
-        
-                if ($test=$res->fetchArray()) { 
-            
+            if ($test=$res->fetchArray()) { 
                 if ($test['item_id']) {
                     $res->reset();
                     $this->affiche($res, "Prochains anniversaires");
                 }
-                else {
-                    echo "<h3>Pas d’anniversaire prochainement</h3>";
-                }
+            }
+            else {
+                echo "<h3>Pas d’anniversaire prochainement</h3>";
             }
         }
     }
@@ -114,9 +112,9 @@ public function liste_next_ev() :void {
                     $res->reset();
                     $this->affiche($res, "Prochains événements");
                 }
-                else {
-                    echo "<h3>Pas d'événement prochainement</h3>";
-                }
+            }
+            else {
+                echo "<h3>Pas d'événement prochainement</h3>";
             }
         }
     }
