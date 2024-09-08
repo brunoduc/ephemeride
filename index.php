@@ -8,7 +8,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="css/style.css" rel="stylesheet" type="text/css">
     <title><?php echo TITRE ?></title>
-    <script src="htmx/htmx.min.js"></script>
+    <script src="htmx/htmx2.min.js"></script>
   </head>
   <body id='page'>
     <?php
