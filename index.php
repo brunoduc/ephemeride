@@ -106,7 +106,7 @@ EOF;
         <?php
             if (!isset($_SESSION['connected'])) {
 echo <<<EOF
-<h2>Identification</h2>
+<h2 id="titre-h2">Identification</h2>
         <form method="post">
             <ul class='mono-col'>
                 <li><input type="text" class="form-control" name="name" placeholder="Nom" autofocus></li>
@@ -164,7 +164,8 @@ EOF;
                 if ($nb_users > 0) {
 echo <<<EOF
 <li style="padding:0px;" id='lien' 
-                onclick='document.getElementById("cde").style.display="flex";
+                onclick='document.getElementById("titre-h2").textContent = "Nouvel utilisateur";
+                        document.getElementById("cde").style.display="flex";
                         document.getElementById("a").focus();
                         document.getElementById("lien").style.display="none";
                         document.getElementById("sub").value="Créer l&#39;utilisateur";'
