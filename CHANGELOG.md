@@ -1,3 +1,6 @@
+- V 1.3.3
+Affichage des sous catégories lors d'une recherche par une catégorie pareente.
+
 - V 1.2.9
 Typage des variables et des fonction
 root@omega:/var/www/html# php vendor/bin/phpstan analyse --level 9 ephemeride/config.inc.php ephemeride/index.php ephemeride/ephemeride.php 
