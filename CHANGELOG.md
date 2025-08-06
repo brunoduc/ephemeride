@@ -1,5 +1,5 @@
 - V 1.3.3
-Affichage des sous catégories lors d'une recherche par une catégorie pareente.
+Affichage des sous catégories lors d'une recherche par une catégorie parente.
 
 - V 1.2.9
 Typage des variables et des fonction

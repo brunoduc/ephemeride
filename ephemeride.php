@@ -484,7 +484,11 @@ public function find_by_cat(int $find_cat, int $debut, int $fin) :void {
     $debut=date('Y-m-d',$debut);
     $fin=date('Y-m-d',$fin);
     
-    $sql_query = "SELECT item_id as i, category.name as categorie, date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name as datas,  items.item_id
+    if ($result['bn'] == "") {  # A t'on besoin d'afficher la sous-catégorie ?
+        $sc = "category.name as categorie,";
+    }
+
+    $sql_query = "SELECT item_id as i, $sc date, STRFTIME('%d/%m/%Y', date) AS date_f, items.name as datas,  items.item_id
         FROM category, items
         WHERE  items.category_id = category.category_id 
         AND (items.category_id=$find_cat 
