@@ -6,7 +6,7 @@ public string $name;
 public string $password;
 public string $db;
 
-private bool $debug=FALSE;
+private bool $debug=TRUE;
 
 function __construct(string $db) {
     $_SESSION['log']="";
@@ -483,7 +483,8 @@ public function find_by_cat(int $find_cat, int $debut, int $fin) :void {
     }
     $debut=date('Y-m-d',$debut);
     $fin=date('Y-m-d',$fin);
-    
+
+    $this->print_debug ("bn : ".$result['bn']."- an : ".$result['an']);
     if ($result['bn'] == "") {  # A t'on besoin d'afficher la sous-catégorie ?
         $sc = "category.name as categorie,";
     }
