@@ -1,5 +1,24 @@
 <?php session_start();
 
+function rmdirRecursive($dir) {
+    if (!is_dir($dir)) {
+        return false; // Le chemin n'est pas un répertoire
+    }
+    $items = scandir($dir);
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') {
+            continue; // Ignorer les pointeurs
+        }
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        if (is_dir($path)) {
+            rmdirRecursive($path); // Appel récursif pour les sous-répertoires
+        } else {
+            unlink($path); // Supprimer les fichiers
+        }
+    }
+    return rmdir($dir); // Supprimer le répertoire une fois vide
+}
+
 function renameFolderContents(string $source, string $destination, bool $recursive = true, bool $overwrite = true): array {
     // Normalize paths to remove trailing slashes
     $source = rtrim($source, '/\\');
@@ -16,21 +35,21 @@ function renameFolderContents(string $source, string $destination, bool $recursi
     // Validate source directory
     if (!is_dir($source)) {
         $results['success'] = false;
-        $results['error'] = "Source folder does not exist or is not a directory: $source";
+        $results['error'] = "Le répertoire source n'existe pas ou n'est pas un répertoire : $source";
         return $results;
     }
 
     // Create destination folder if it doesn't exist
     if (!file_exists($destination) && !mkdir($destination, 0755, true)) {
         $results['success'] = false;
-        $results['error'] = "Cannot create destination folder: $destination";
+        $results['error'] = "Imposibilité de créer le répertoire de destination : $destination";
         return $results;
     }
 
     // Ensure destination is a valid directory
     if (!is_dir($destination)) {
         $results['success'] = false;
-        $results['error'] = "Destination is not a valid directory: $destination";
+        $results['error'] = "La destination n'est pas un répertoire valide : $destination";
         return $results;
     }
 
@@ -38,7 +57,7 @@ function renameFolderContents(string $source, string $destination, bool $recursi
     $items = scandir($source);
     if ($items === false) {
         $results['success'] = false;
-        $results['error'] = "Failed to read source folder: $source";
+        $results['error'] = "Imposibilité de lire le répertoire source : $source";
         return $results;
     }
 
@@ -69,7 +88,7 @@ function renameFolderContents(string $source, string $destination, bool $recursi
 
         // Handle directories recursively
         elseif ($recursive && is_dir($sourceItem)) {
-            $subResults = copyFolderContents($sourceItem, $destinationItem, true, $overwrite);
+            $subResults = renameFolderContents($sourceItem, $destinationItem, true, $overwrite);
 
             // Merge results from subdirectories
             $results['copied_files'] = array_merge($results['copied_files'], $subResults['copied_files']);
@@ -94,7 +113,7 @@ $zip = new ZipArchive;
 if ($zip->open("$filename") === TRUE) {
     $zip->extractTo("..");
     $zip->close();
-    $a = substr($version, 1);
+    //$a = substr($version, 1);
     $rep = "../ephemeride-$a";
     if (is_dir("$rep")) {
         $sourceFolder = $rep;
@@ -104,6 +123,8 @@ if ($zip->open("$filename") === TRUE) {
         $copyResults = copyFolderContents($sourceFolder, $destinationFolder, true, $overwrite);
         if ($copyResults['success']) {
             echo "Mise à jour effectuée";
+            unlink($filename);
+            rmdirRecursive($dir);
         }
         else {
             echo $results['error'];

@@ -153,33 +153,37 @@ EOF;
     </main>
     <footer>
         <span>
-        <?php $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
-        if ($json!=EPH_VERS) {
-            echo "Mise à jour ".EPH_VERS." vers ".$json." disponible ";
-            $file_name = "$json.zip";
-            if (!file_exists($file_name)) {
-                // Initialize a file URL to the variable
-                $url = "https://github.com/brunoduc/ephemeride/archive/refs/tags/$file_name";
+        <?php
+        if (isset($_SESSION['connected'])) {
+            $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
+            if ($json!=EPH_VERS) {
+                echo "Mise à jour ".EPH_VERS." vers ".$json." disponible ";
+                $file_name = "$json.zip";
+                if (!file_exists($file_name)) {
+                    // Initialize a file URL to the variable
+                    $url = "https://github.com/brunoduc/ephemeride/archive/refs/tags/$file_name";
 
-                // Use file_get_contents() function to get the file from url and use file_put_contents() function to
-                // save the file by using base name
+                    // Use file_get_contents() function to get the file from url and use file_put_contents() function to
+                    // save the file by using base name
 
-                if (file_put_contents("$file_name", file_get_contents($url))){
-                    echo "MAJ téléchargée. ";
+                    if (file_put_contents("$file_name", file_get_contents($url))){
+                        echo "MAJ téléchargée. ";
+                    }
+                    else{
+                        echo "Echec du téléchargement de la MAJ. ";
+                    }
                 }
-                else{
-                    echo "Echec du téléchargement de la MAJ. ";
+                if (file_exists($file_name)) {
+    echo <<<EOF
+    <button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="outerHTML">
+    &nbsp;Mettre à jour&nbsp;
+    </button>
+    EOF;
                 }
             }
-            if (file_exists($file_name)) {
-echo <<<EOF
-<button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="outerHTML">
-&nbsp;Mettre à jour&nbsp;
-</button>
-EOF;
-            }
+            else { echo EPH_VERS; }
         }
-        else { echo EPH_VERS; } ?></span>
+        ?></span>
         <ul class="footer">
         <?php
             if (isset($_SESSION['connected'])) {
