@@ -1,3 +1,6 @@
+- V 1.4.0
+Vérification & installation des mises à jours disponibles.
+
 - V 1.3.3
 Affichage des sous catégories lors d'une recherche par une catégorie parente.
 

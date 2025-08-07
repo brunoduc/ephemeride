@@ -152,10 +152,37 @@ EOF;
     
     </main>
     <footer>
-        <span><?php echo "v ".EPH_VERS; ?></span>
+        <span>
+        <?php $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
+        if ($json!=EPH_VERS) {
+            echo "Mise à jour ".EPH_VERS." vers ".$json." disponible ";
+            $file_name = "$json.zip";
+            if (!file_exists($file_name)) {
+                // Initialize a file URL to the variable
+                $url = "https://github.com/brunoduc/ephemeride/archive/refs/tags/$file_name";
+
+                // Use file_get_contents() function to get the file from url and use file_put_contents() function to
+                // save the file by using base name
+
+                if (file_put_contents("$file_name", file_get_contents($url))){
+                    echo "File downloaded successfully";
+                }
+                else{
+                    echo "File downloading failed.";
+                }
+            }
+            if (file_exists($file_name)) {
+echo <<<EOF
+<button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="innerHTML">
+&nbsp;Mettre à jour&nbsp;
+</button>
+EOF;
+            }
+        }
+        else { echo EPH_VERS; } ?></span>
         <ul class="footer">
-            <?php 
-            if (isset($_SESSION['connected'])) { 
+        <?php
+            if (isset($_SESSION['connected'])) {
                 echo '<li><a title="backup du compte" href="htmx/backup.php"><svg><use xlink:href="css/icones.svg#backup" /></svg></a></li>'; 
                 echo '<li><a title="backup de la base" href="users/'.$_SESSION['base_name'].'/base.sqlite3"><svg><use xlink:href="css/icones.svg#base" /></svg></a></li>'; 
                 echo '<li hx-post="htmx/restore.php" hx-target="#main" title="Restaurer"><svg><use xlink:href="css/icones.svg#restbase" /></svg></li>';
@@ -174,7 +201,7 @@ echo <<<EOF
             </li>
 EOF;
                 }
-}
+            }
             ?>
             
         </ul>

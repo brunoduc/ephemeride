@@ -1,6 +1,6 @@
 <?php
 // Version d'Éphéméris
-    define('EPH_VERS','1.3.3');
+    define('EPH_VERS','v1.4.0');
     
 // Code pour l'ajout d'un utilisateur
     define('ADD_USER_CODE','1234GPL');

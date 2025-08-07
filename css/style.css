@@ -32,6 +32,16 @@ main { padding-top: 180px; }
 }
 #logo svg { width: 80px; height:80px; padding-top:5px; }
 
+.maj {
+    background-color: #00a000;
+    border-radius: 20px;
+    line-height: 25px;
+}
+.maj:hover {
+    background-color: #008000;
+    color:white;
+}
+
 #nav { display: flex; flex-direction: row; justify-content: center; }
 #nav li { display: flex; flex-wrap: wrap; justify-content: start; padding:0px; color: black; text-shadow: 1px 1px 5px #666; margin:0 1em 0 1em; cursor:pointer; }
 #nav > li > span { display:none; margin:0px;padding:0px;}
