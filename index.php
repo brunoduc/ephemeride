@@ -152,7 +152,7 @@ EOF;
     
     </main>
     <footer>
-        <span>
+        <span id="ver">
         <?php
         if (isset($_SESSION['connected'])) {
             $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
@@ -166,15 +166,16 @@ EOF;
                     // save the file by using base name
 
                     if (file_put_contents("$file_name", file_get_contents($url))){
-                        echo "Mise à jour ".EPH_VERS." vers ".$json." disponible. ";
                     }
                     else{
                         echo "Echec du téléchargement de la MAJ. ";
                     }
                 }
                 if (file_exists($file_name)) {
+                    $vers_actuelle = EPH_VERS;
     echo <<<EOF
-    <button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="outerHTML">
+    Mise à jour $vers_actuelle vers $json téléchargée.
+    <button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="innerHTML" hx-target="#ver">
     &nbsp;Mettre à jour&nbsp;
     </button>
     EOF;

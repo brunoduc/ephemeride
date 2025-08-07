@@ -19,7 +19,7 @@ function rmdirRecursive($dir) {
     return rmdir($dir); // Supprimer le répertoire une fois vide
 }
 
-function renameFolderContents(string $source, string $destination, bool $recursive = true, bool $overwrite = true): array {
+function moveFolderContents(string $source, string $destination, bool $recursive = true, bool $overwrite = true): array {
     // Normalize paths to remove trailing slashes
     $source = rtrim($source, '/\\');
     $destination = rtrim($destination, '/\\');
@@ -88,7 +88,7 @@ function renameFolderContents(string $source, string $destination, bool $recursi
 
         // Handle directories recursively
         elseif ($recursive && is_dir($sourceItem)) {
-            $subResults = renameFolderContents($sourceItem, $destinationItem, true, $overwrite);
+            $subResults = moveFolderContents($sourceItem, $destinationItem, true, $overwrite);
 
             // Merge results from subdirectories
             $results['copied_files'] = array_merge($results['copied_files'], $subResults['copied_files']);
@@ -98,7 +98,6 @@ function renameFolderContents(string $source, string $destination, bool $recursi
             }
         }
     }
-
     return $results;
 }
 
@@ -113,23 +112,19 @@ $zip = new ZipArchive;
 if ($zip->open("$filename") === TRUE) {
     $zip->extractTo("..");
     $zip->close();
-    //$a = substr($version, 1);
-    $rep = "../ephemeride-$a";
+    unlink($filename);
+    $rep = "../ephemeride-$version";
     if (is_dir("$rep")) {
         $sourceFolder = $rep;
         $destinationFolder = '..';
         $overwrite = TRUE; // Set to true to enable overwriting files
 
-        $copyResults = copyFolderContents($sourceFolder, $destinationFolder, true, $overwrite);
-        if ($copyResults['success']) {
-            echo "Mise à jour effectuée";
-            unlink($filename);
-            rmdirRecursive($dir);
-        }
-        else {
-            echo $results['error'];
-            var_dump ($copyResults['failed_files']);
-        }
+        $copyResults = moveFolderContents($sourceFolder, $destinationFolder, true, $overwrite);
+
+        echo "Mise à jour $version effectuée";
+
+        rmdirRecursive($rep);
+
     }
 } else {
     echo 'failed';
