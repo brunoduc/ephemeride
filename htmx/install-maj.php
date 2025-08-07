@@ -1,6 +1,6 @@
 <?php session_start();
 
-function copyFolderContents(string $source, string $destination, bool $recursive = true, bool $overwrite = true): array {
+function renameFolderContents(string $source, string $destination, bool $recursive = true, bool $overwrite = true): array {
     // Normalize paths to remove trailing slashes
     $source = rtrim($source, '/\\');
     $destination = rtrim($destination, '/\\');
@@ -58,8 +58,8 @@ function copyFolderContents(string $source, string $destination, bool $recursive
                 continue;
             }
 
-            // Copy file and track the result
-            if (@copy($sourceItem, $destinationItem)) {
+            // Move file and track the result
+            if (@rename($sourceItem, $destinationItem)) {
                 $results['copied_files'][] = $destinationItem;
             } else {
                 $results['failed_files'][] = $sourceItem;
@@ -88,9 +88,7 @@ include_once('../ephemeride.php');
 $eph = new ephemeride($_SESSION['base']);
 
 $version = $_GET['version'];
-echo "version : $version";
 $filename = "../$version.zip";
-echo $filename;
 clearstatcache();
 $zip = new ZipArchive;
 if ($zip->open("$filename") === TRUE) {
@@ -98,14 +96,19 @@ if ($zip->open("$filename") === TRUE) {
     $zip->close();
     $a = substr($version, 1);
     $rep = "../ephemeride-$a";
-    echo "rep = $rep";
     if (is_dir("$rep")) {
         $sourceFolder = $rep;
         $destinationFolder = '..';
         $overwrite = TRUE; // Set to true to enable overwriting files
 
         $copyResults = copyFolderContents($sourceFolder, $destinationFolder, true, $overwrite);
-
+        if ($copyResults['success']) {
+            echo "Mise à jour effectuée";
+        }
+        else {
+            echo $results['error'];
+            var_dump ($copyResults['failed_files']);
+        }
     }
 } else {
     echo 'failed';

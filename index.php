@@ -165,15 +165,15 @@ EOF;
                 // save the file by using base name
 
                 if (file_put_contents("$file_name", file_get_contents($url))){
-                    echo "File downloaded successfully";
+                    echo "MAJ téléchargée. ";
                 }
                 else{
-                    echo "File downloading failed.";
+                    echo "Echec du téléchargement de la MAJ. ";
                 }
             }
             if (file_exists($file_name)) {
 echo <<<EOF
-<button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="innerHTML">
+<button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="outerHTML">
 &nbsp;Mettre à jour&nbsp;
 </button>
 EOF;
