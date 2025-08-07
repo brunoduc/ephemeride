@@ -157,7 +157,6 @@ EOF;
         if (isset($_SESSION['connected'])) {
             $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
             if ($json!=EPH_VERS) {
-                echo "Mise à jour ".EPH_VERS." vers ".$json." disponible ";
                 $file_name = "$json.zip";
                 if (!file_exists($file_name)) {
                     // Initialize a file URL to the variable
@@ -167,7 +166,7 @@ EOF;
                     // save the file by using base name
 
                     if (file_put_contents("$file_name", file_get_contents($url))){
-                        echo "MAJ téléchargée. ";
+                        echo "Mise à jour ".EPH_VERS." vers ".$json." disponible. ";
                     }
                     else{
                         echo "Echec du téléchargement de la MAJ. ";
@@ -181,7 +180,7 @@ EOF;
     EOF;
                 }
             }
-            else { echo EPH_VERS; }
+            else { echo "Version ".EPH_VERS; }
         }
         ?></span>
         <ul class="footer">
