@@ -226,10 +226,13 @@ private function get_mime_type(string $filename) :string
  */
 public function new_ev(string $date, string $cat, string $sub_cat, string $n_desc, array $files) :void {
 
-    $mots[] = preg_split("/[\s,]+/", $n_desc);
-    $tags_array = array();
-    $tags_array = preg_grep("/^\*/", $mots);
-    
+    $mots = preg_split("/[\s,]+/", $n_desc);
+    if ($this->debug) { echo "<hr/>mots<br/>"; var_dump($mots); }
+
+    $character = '*';
+    $tags_array = preg_grep('/^' . preg_quote($character, '/') . '/i', $mots);
+    if ($this->debug) { echo "<hr/>tags_array 01<br/>"; var_dump($tags_array); }
+
     $n_desc = str_replace("*", "", "$n_desc");
     $date         = $this->clean($date);
     $cat          = $this->clean($cat);
@@ -312,6 +315,7 @@ public function new_ev(string $date, string $cat, string $sub_cat, string $n_des
                     $this->new_log("Création de l'événement réussie", 0);
                     $id_tag_array = array();
                  if ($tags_array) {
+                    if ($this->debug) { echo "<hr/>tags_array 02<br/>"; var_dump($tags_array); }
                     foreach ($tags_array as $tag) {
                         $tag = strtolower(ltrim($tag, "*"));
                         $tag = $this->clean($tag);
@@ -327,13 +331,13 @@ public function new_ev(string $date, string $cat, string $sub_cat, string $n_des
                                 $row = $res->fetchArray();
                                 $id_tag_array['$tag'] = intval($row[0]);
                             }
-                        }
-                        else { 
-                            $sql_query = "INSERT INTO tags (name) VALUES ('$tag')";
-                            $this->query($sql_query);
-                            $id_tag_array["$tag"] = $this->lastInsertRowID();
-                            $this->new_log("Création de l'étiquette $tag réussie", 0);
-                            $this->print_debug ("On crée l'étiquette $tag");
+                            else {
+                                $sql_query = "INSERT INTO tags (name) VALUES ('$tag')";
+                                $this->query($sql_query);
+                                $id_tag_array["$tag"] = $this->lastInsertRowID();
+                                $this->new_log("Création de l'étiquette $tag réussie", 0);
+                                $this->print_debug ("On crée l'étiquette $tag");
+                            }
                         }
                     }
                 }
