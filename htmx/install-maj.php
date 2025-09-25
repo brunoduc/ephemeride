@@ -106,29 +106,40 @@ include_once('../ephemeride.php');
 $eph = new ephemeride($_SESSION['base']);
 
 $version = $_GET['version'];
-$filename = "../$version.zip";
-clearstatcache();
-$zip = new ZipArchive;
-if ($zip->open("$filename") === TRUE) {
-    $zip->extractTo("..");
-    $zip->close();
-    unlink($filename);
-    $rep = "../ephemeride-$version";
-    if (is_dir("$rep")) {
-        $sourceFolder = $rep;
-        $destinationFolder = '..';
-        $overwrite = TRUE; // Set to true to enable overwriting files
 
-        $copyResults = moveFolderContents($sourceFolder, $destinationFolder, true, $overwrite);
+$filename = "$version.zip";
 
-        echo "Mise à jour $version effectuée";
+    $url = "https://github.com/brunoduc/ephemeride/archive/refs/tags/$filename";
+    if (file_put_contents("$filename", file_get_contents($url))) {
+        echo "téléchargement ok";
+        clearstatcache();
+        $zip = new ZipArchive;
+        if ($zip->open("$filename") === TRUE) {
+            $zip->extractTo("..");
+            $zip->close();
+            unlink($filename);
+            $rep = "../ephemeride-$version";
+            if (is_dir("$rep")) {
+                $sourceFolder = $rep;
+                $destinationFolder = '..';
+                $overwrite = TRUE; // Set to true to enable overwriting files
 
-        rmdirRecursive($rep);
+                $copyResults = moveFolderContents($sourceFolder, $destinationFolder, true, $overwrite);
 
+                echo "Mise à jour $version effectuée";
+
+                rmdirRecursive($rep);
+
+            }
+        } else {
+            echo 'failed';
+        }
     }
-} else {
-    echo 'failed';
-}
+    else {
+         echo "Echec du téléchargement de la MAJ. ";
+    }
+clearstatcache();
+
 
 
 

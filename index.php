@@ -156,31 +156,55 @@ EOF;
         <?php
         if (isset($_SESSION['connected'])) {
             $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
-            if ($json!=EPH_VERS) {
-                $file_name = "$json.zip";
-                if (!file_exists($file_name)) {
-                    // Initialize a file URL to the variable
-                    $url = "https://github.com/brunoduc/ephemeride/archive/refs/tags/$file_name";
+            $git_ver = explode(".", $json);
 
-                    // Use file_get_contents() function to get the file from url and use file_put_contents() function to
-                    // save the file by using base name
+            $local_ver = explode(".", EPH_VERS);
 
-                    if (file_put_contents("$file_name", file_get_contents($url))){
+            if ($local_ver[0] >= $git_ver[0]) {
+                if ($local_ver[1] >= $git_ver[1]) {
+                    if ($local_ver[2] >= $git_ver[2]) {
+                        $a_jour = TRUE;
                     }
-                    else{
-                        echo "Echec du téléchargement de la MAJ. ";
-                    }
-                }
-                if (file_exists($file_name)) {
-                    $vers_actuelle = EPH_VERS;
-    echo <<<EOF
-    Mise à jour $vers_actuelle vers $json téléchargée.
-    <button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="innerHTML" hx-target="#ver">
-    &nbsp;Mettre à jour&nbsp;
-    </button>
-    EOF;
                 }
             }
+
+            if (!$a_jour) {
+                echo <<<EOF
+                <button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="innerHTML" hx-target="#ver">
+                &nbsp;Mettre à jour&nbsp;
+                </button>
+                EOF;
+            }
+
+
+
+
+
+    //         if ($json!=EPH_VERS) {
+    //             $file_name = "$json.zip";
+    //             if (!file_exists($file_name)) {
+    //                 // Initialize a file URL to the variable
+    //                 $url = "https://github.com/brunoduc/ephemeride/archive/refs/tags/$file_name";
+    //
+    //                 // Use file_get_contents() function to get the file from url and use file_put_contents() function to
+    //                 // save the file by using base name
+    //
+    //                 if (file_put_contents("$file_name", file_get_contents($url))){
+    //                 }
+    //                 else{
+    //                     echo "Echec du téléchargement de la MAJ. ";
+    //                 }
+    //             }
+    //             if (file_exists($file_name)) {
+    //                 $vers_actuelle = EPH_VERS;
+    // echo <<<EOF
+    // Mise à jour $vers_actuelle vers $json téléchargée.
+    // <button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="innerHTML" hx-target="#ver">
+    // &nbsp;Mettre à jour&nbsp;
+    // </button>
+    // EOF;
+    //             }
+    //         }
             else { echo "Version ".EPH_VERS; }
         }
         ?></span>
