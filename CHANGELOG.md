@@ -1,3 +1,7 @@
+- V 1.4.7
+Correction de l'ajout des étiquettes à une entrée.
+Vérification des mises à jour améliorée.
+
 - V 1.4.0
 Vérification & installation des mises à jours disponibles.
 
