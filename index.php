@@ -19,61 +19,61 @@
             $msg = dirname("$base_path/users/.") . ' must writable!!!';
         }
         else {
-        
-        if (isset($_POST['name']) and isset($_POST['passwd'])) {
-            $name = $_POST['name'];
-            $passwd = $_POST['passwd'];
-            $connected = hash('sha256', $name.$passwd);
-            $filename = $base_path.'/users/'.$connected.'/base.sqlite3';
-            $userDir = $base_path.'/users/'.$connected;
-            if (file_exists($filename)) {
-                $_SESSION['connected'] = TRUE;
-                $_SESSION['userDir'] = $userDir;
-                $_SESSION['base'] = $filename;
-                $_SESSION['base_name'] = $connected;
-                $_SESSION['user'] = $name;
-                $eph = new ephemeride($filename);
+            if (isset($_POST['name']) and isset($_POST['passwd'])) {
+                $name = $_POST['name'];
+                $passwd = $_POST['passwd'];
+                $connected = hash('sha256', $name.$passwd);
+                $filename = $base_path.'/users/'.$connected.'/base.sqlite3';
+                $userDir = $base_path.'/users/'.$connected;
+                if (file_exists($filename)) {
+                    $_SESSION['connected'] = TRUE;
+                    $_SESSION['userDir'] = $userDir;
+                    $_SESSION['base'] = $filename;
+                    $_SESSION['base_name'] = $connected;
+                    $_SESSION['user'] = $name;
+                    $eph = new ephemeride($filename);
 
-                // vérilication de mise à jour lors de la connection.
-                $a_jour = TRUE;
-                $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
-                $git_ver = explode(".", $json);
+                    // vérilication de mise à jour lors de la connection.
+                    $_SESSION['a_jour'] = TRUE;
+                    $json = trim(shell_exec('curl -s "https://api.github.com/repos/brunoduc/ephemeride/releases/latest"  | jq -r ".tag_name"'));
+                    $git_ver = explode(".", $json);
 
-                $local_ver = explode(".", EPH_VERS);
+                    $local_ver = explode(".", EPH_VERS);
 
-                if ($local_ver[0] < $git_ver[0]) {
-                    $a_jour = FALSE;
+                    if ($git_ver[0] > $local_ver[0]) {
+                        $_SESSION['a_jour'] = FALSE;
+                    }
+                    elseif ($git_ver[0] = $local_ver[0]) {
+                        if ($git_ver[1] > $local_ver[1]) {
+                            $_SESSION['a_jour'] = FALSE;
+                        }
+                        elseif ($git_ver[1] = $local_ver[1]) {
+                            if ($git_ver[2] > $local_ver[2]) {
+                                $_SESSION['a_jour'] = FALSE;
+                            }
+                        }
+                        else {}
+                    }
+                    else {}
+                    // fin de la vérification de mise à jour
                 }
                 else {
-                    if ($local_ver[1] < $git_ver[1]) {
-                        $a_jour = FALSE;
-                    }
-                    else {
-                        if ($local_ver[2] < $git_ver[2]) {
-                            $a_jour = FALSE;
+                    if (($nb_users < 1) or ((isset($_POST['cde']) and $_POST['cde']==ADD_USER_CODE))) {
+                        mkdir("$base_path/users/$connected", 0700);
+                        $eph = new ephemeride($filename);
+                        if ($eph->init_table()) {
+                            $_SESSION['connected'] = TRUE;
+                            $_SESSION['base'] = $filename;
+                            $_SESSION['base_name'] = $connected;
+                            $_SESSION['user'] = $name;
+                            $eph->new_log("Utilisateur enregistré", 0);
                         }
                     }
                 }
             }
-            else {
-                if (($nb_users < 1) or ((isset($_POST['cde']) and $_POST['cde']==ADD_USER_CODE))) {
-                    mkdir("$base_path/users/$connected", 0700);
-                    $eph = new ephemeride($filename);
-                    if ($eph->init_table()) {
-                        $_SESSION['connected'] = TRUE;
-                        $_SESSION['base'] = $filename;
-                        $_SESSION['base_name'] = $connected;
-                        $_SESSION['user'] = $name;
-                        $eph->new_log("Utilisateur enregistré", 0);
-                    }
-                }
+            elseif (isset($_SESSION['connected']) AND $_SESSION['connected']) {
+                $eph = new ephemeride($_SESSION['base']);
             }
-        }
-        
-        elseif (isset($_SESSION['connected']) AND $_SESSION['connected']) {
-            $eph = new ephemeride($_SESSION['base']);        
-        }
-        
         }
 ?>
 <header>
@@ -176,15 +176,16 @@ EOF;
         <span id="ver">
         <?php
         if (isset($_SESSION['connected'])) {
-            if (!$a_jour) {
+            if ($_SESSION['a_jour']) {
+                echo "Version ".EPH_VERS;
+            }
+            else {
                 echo <<<EOF
                 <button class="maj" hx-get="htmx/install-maj.php" hx-vals='{"version": "$json"}' hx-swap="innerHTML" hx-target="#ver">
                 &nbsp;Mettre à jour&nbsp;
                 </button>
                 EOF;
-                echo "$a_jour";
             }
-            else { echo "Version ".EPH_VERS; }
         }
         ?></span>
         <ul class="footer">
@@ -210,7 +211,6 @@ EOF;
                 }
             }
             ?>
-            
         </ul>
      </footer>
   </body>
